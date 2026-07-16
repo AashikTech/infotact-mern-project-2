@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 import { config } from './config';
 import { connectRedis } from './config/redis';
 import productRoutes from './routes/productRoutes';
+import cartRoutes from './routes/cartRoutes';
+import orderRoutes from './routes/orderRoutes';
 
 const app = express();
 
@@ -15,6 +17,8 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/api/products', productRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
 
 const startServer = async () => {
   try {

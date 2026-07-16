@@ -5,6 +5,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Product } from '../models/Product';
 import { cacheGet, cacheSet, cacheDelete, cacheDeletePattern } from '../utils/cache';
+import { generateEmbedding } from '../utils/embedding';
 
 export const getProducts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -21,7 +22,7 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
       return;
     }
 
-    const products = await Product.find().skip(skip).limit(limit);
+    const products = await Product.find().select('-embedding').skip(skip).limit(limit);
     const total = await Product.countDocuments();
 
     const responseData = {
@@ -56,7 +57,7 @@ export const getProductById = async (req: Request, res: Response, next: NextFunc
       return;
     }
 
-    const product = await Product.findById(id);
+    const product = await Product.findById(id).select('-embedding');
 
     if (!product) {
       res.status(404).json({ success: false, message: 'Product not found' });
@@ -110,5 +111,52 @@ export const deleteProduct = async (req: Request, res: Response, next: NextFunct
     res.status(200).json({ success: true, message: 'Product deleted' });
   } catch (error) {
     next(error);
+  }
+};
+
+/**
+ * VECTOR SEARCH:
+ * Requires MongoDB Atlas Vector Search index on "embedding" field.
+ * Create index in Atlas dashboard:
+ * - Field: "embedding"
+ * - Dimensions: 384 (for mock) or 1536 (for OpenAI text-embedding-3-small)
+ * - Similarity: "cosine"
+ */
+export const semanticSearch = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { q } = req.query;
+
+    if (!q) {
+      res.status(400).json({ success: false, message: 'Search query required' });
+      return;
+    }
+
+    const queryEmbedding = await generateEmbedding(q as string);
+
+    const results = await Product.aggregate([
+      {
+        $vectorSearch: {
+          index: 'default',
+          path: 'embedding',
+          queryVector: queryEmbedding,
+          numCandidates: 100,
+          limit: 10,
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          description: 1,
+          price: 1,
+          category: 1,
+          score: { $meta: 'vectorSearchScore' },
+        },
+      },
+    ] as any[]);
+
+    res.status(200).json({ success: true, data: results });
+  } catch (error) {
+    console.error('Vector search error:', error);
+    res.status(500).json({ success: false, message: 'Vector search not available. Ensure Atlas Vector Search index is configured.' });
   }
 };
