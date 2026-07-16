@@ -78,8 +78,8 @@ infotact-ecommerce-project/
 
 ```bash
 # Clone the repository
-git clone https://github.com/<your-username>/infotact-ecommerce-project.git
-cd infotact-ecommerce-project
+git clone https://github.com/AashikTech/infotact-mern-project-2.git
+cd infotact-mern-project-2
 
 # Setup server
 cd server
