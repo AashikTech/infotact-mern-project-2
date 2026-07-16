@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import { config } from './config';
+import { connectRedis } from './config/redis';
+import productRoutes from './routes/productRoutes';
 
 const app = express();
 
@@ -12,6 +14,8 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
+app.use('/api/products', productRoutes);
+
 const startServer = async () => {
   try {
     await mongoose.connect(config.mongoUri, {
@@ -19,6 +23,8 @@ const startServer = async () => {
       socketTimeoutMS: 45000,
     });
     console.log('Connected to MongoDB');
+
+    await connectRedis();
 
     app.listen(config.port, () => {
       console.log(`Server running on port ${config.port}`);
