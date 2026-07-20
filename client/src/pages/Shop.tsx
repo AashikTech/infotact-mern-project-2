@@ -99,6 +99,14 @@ const Shop = () => {
         <h2 className="text-2xl font-bold mb-6">
           {searchResults ? `Search Results (${searchResults.length})` : 'All Products'}
         </h2>
+
+        {displayProducts.length === 0 && searchResults && (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">No products found for "{searchQuery}"</p>
+            <p className="text-gray-400 text-sm mt-2">Try different keywords like "jackets", "shoes", or "electronics"</p>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {displayProducts.map(product => (
             <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
@@ -127,24 +135,26 @@ const Shop = () => {
           ))}
         </div>
 
-        {/* Pagination */}
-        <div className="flex justify-center gap-2 mt-8">
-          <button
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="px-4 py-2 border rounded disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <span className="px-4 py-2">Page {page} of {Math.ceil(total / 8)}</span>
-          <button
-            onClick={() => setPage(p => p + 1)}
-            disabled={page * 8 >= total}
-            className="px-4 py-2 border rounded disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
+        {/* Pagination - only show when not searching */}
+        {!searchResults && (
+          <div className="flex justify-center gap-2 mt-8">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 border rounded disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="px-4 py-2">Page {page} of {Math.ceil(total / 8)}</span>
+            <button
+              onClick={() => setPage(p => p + 1)}
+              disabled={page * 8 >= total}
+              className="px-4 py-2 border rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

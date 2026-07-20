@@ -161,14 +161,30 @@ export const semanticSearch = async (req: Request, res: Response, next: NextFunc
       console.log('Vector search failed, falling back to text search');
     }
 
-    // Fallback to text search
-    const textResults = await Product.find({
-      $or: [
-        { name: { $regex: q as string, $options: 'i' } },
-        { description: { $regex: q as string, $options: 'i' } },
-        { category: { $regex: q as string, $options: 'i' } },
-      ],
-    }).limit(10).select('-embedding');
+    // Fallback to text search - get diverse results
+    const textResults = await Product.aggregate([
+      {
+        $match: {
+          $or: [
+            { name: { $regex: q as string, $options: 'i' } },
+            { description: { $regex: q as string, $options: 'i' } },
+            { category: { $regex: q as string, $options: 'i' } },
+          ],
+        },
+      },
+      // Group by name to get unique products
+      {
+        $group: {
+          _id: '$name',
+          doc: { $first: '$$ROOT' },
+        },
+      },
+      { $replaceRoot: { newRoot: '$doc' } },
+      // Limit to 6 unique results
+      { $limit: 6 },
+      // Exclude embedding field
+      { $project: { embedding: 0 } },
+    ]);
 
     res.status(200).json({ success: true, data: textResults });
   } catch (error) {
