@@ -3,9 +3,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
-  const [activeTab, setActiveTab] = useState<'customer' | 'admin'>('customer');
+  const [role, setRole] = useState<'customer' | 'admin'>('customer');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -27,90 +28,119 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl overflow-hidden">
-        {/* Header Tabs */}
-        <div className="flex">
-          <button
-            onClick={() => { setActiveTab('customer'); setError(''); }}
-            className={`flex-1 py-4 text-center font-semibold text-lg transition ${
-              activeTab === 'customer'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-            }`}
-          >
-            Customer Login
-          </button>
-          <button
-            onClick={() => { setActiveTab('admin'); setError(''); }}
-            className={`flex-1 py-4 text-center font-semibold text-lg transition ${
-              activeTab === 'admin'
-                ? 'bg-purple-600 text-white'
-                : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-            }`}
-          >
-            Admin Login
-          </button>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold text-gray-800">E-Commerce Engine</h1>
+          <div className="w-16 h-1 bg-blue-600 mx-auto mt-2 rounded"></div>
         </div>
 
-        {/* Form */}
-        <div className="p-8">
-          <h2 className="text-2xl font-bold mb-2 text-center">
-            {activeTab === 'customer' ? ' Welcome, Customer!' : ' Welcome, Admin!'}
-          </h2>
-          <p className="text-gray-500 text-center mb-6">
-            {activeTab === 'customer'
-              ? 'Login to browse products and shop'
-              : 'Login to manage products and orders'}
-          </p>
+        {/* Welcome */}
+        <div className="text-center mb-6">
+          <h2 className="text-xl font-semibold text-gray-700">Welcome Back</h2>
+          <p className="text-gray-500 text-sm mt-1">Sign in to continue to your account</p>
+        </div>
 
-          {error && (
-            <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>
-          )}
-
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter your email"
-                required
-              />
-            </div>
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-1">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter your password"
-                required
-              />
-            </div>
+        {/* Role Selection */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-600 mb-2">Select Your Role</label>
+          <div className="flex gap-3">
             <button
-              type="submit"
-              className={`w-full py-3 rounded-lg text-white font-semibold transition ${
-                activeTab === 'customer'
-                  ? 'bg-blue-600 hover:bg-blue-700'
-                  : 'bg-purple-600 hover:bg-purple-700'
+              type="button"
+              onClick={() => setRole('customer')}
+              className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
+                role === 'customer'
+                  ? 'border-blue-600 bg-blue-50 text-blue-600'
+                  : 'border-gray-200 text-gray-500 hover:border-gray-300'
               }`}
             >
-              Login as {activeTab === 'customer' ? 'Customer' : 'Admin'}
+              <span className="text-lg">👤</span>
+              <span className="font-medium">Customer</span>
             </button>
-          </form>
-
-          <div className="text-center mt-6">
-            <p className="text-sm text-gray-500">
-              Don't have an account?{' '}
-              <Link to="/register" className="text-blue-600 hover:underline font-medium">
-                Register here
-              </Link>
-            </p>
+            <button
+              type="button"
+              onClick={() => setRole('admin')}
+              className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
+                role === 'admin'
+                  ? 'border-purple-600 bg-purple-50 text-purple-600'
+                  : 'border-gray-200 text-gray-500 hover:border-gray-300'
+              }`}
+            >
+              <span className="text-lg">🛠️</span>
+              <span className="font-medium">Admin</span>
+            </button>
           </div>
+        </div>
+
+        {/* Error */}
+        {error && (
+          <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">{error}</div>
+        )}
+
+        {/* Form */}
+        <form onSubmit={handleSubmit}>
+          {/* Email */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-600 mb-1">Email Address</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="your@email.com"
+              required
+            />
+          </div>
+
+          {/* Password */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-600 mb-1">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+
+          {/* Remember Me & Forgot */}
+          <div className="flex items-center justify-between mb-6">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 text-blue-600 rounded border-gray-300"
+              />
+              <span className="text-sm text-gray-600">Remember Me</span>
+            </label>
+            <a href="#" className="text-sm text-blue-600 hover:underline">Forgot Password?</a>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className={`w-full py-3 rounded-lg text-white font-semibold transition ${
+              role === 'admin'
+                ? 'bg-purple-600 hover:bg-purple-700'
+                : 'bg-blue-600 hover:bg-blue-700'
+            }`}
+          >
+            Sign In
+          </button>
+        </form>
+
+        {/* Register Link */}
+        <div className="text-center mt-6">
+          <p className="text-sm text-gray-500">
+            New here?{' '}
+            <Link to="/register" className="text-blue-600 hover:underline font-medium">
+              Create an Account
+            </Link>
+          </p>
         </div>
       </div>
     </div>
