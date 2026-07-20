@@ -18,6 +18,8 @@ const Shop = () => {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [cartCount, setCartCount] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<Product[] | null>(null);
 
   const fetchProducts = async () => {
     const res = await api.get(`/products?page=${page}&limit=8`);
@@ -26,6 +28,19 @@ const Shop = () => {
   };
 
   useEffect(() => { fetchProducts(); }, [page]);
+
+  const handleSearch = async () => {
+    if (!searchQuery) {
+      setSearchResults(null);
+      return;
+    }
+    try {
+      const res = await api.get(`/products/search?q=${encodeURIComponent(searchQuery)}`);
+      setSearchResults(res.data.data);
+    } catch (err) {
+      console.error('Search failed');
+    }
+  };
 
   const addToCart = async (productId: string) => {
     try {
@@ -36,6 +51,8 @@ const Shop = () => {
       alert('Please login to add items');
     }
   };
+
+  const displayProducts = searchResults || products;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -53,9 +70,37 @@ const Shop = () => {
 
       {/* Products Grid */}
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold mb-6">All Products</h2>
+        {/* Search Bar */}
+        <div className="mb-6 flex gap-2">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            placeholder="Search products (e.g. warm winter jackets)..."
+            className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            onClick={handleSearch}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Search
+          </button>
+          {searchResults && (
+            <button
+              onClick={() => { setSearchResults(null); setSearchQuery(''); }}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
+        <h2 className="text-2xl font-bold mb-6">
+          {searchResults ? `Search Results (${searchResults.length})` : 'All Products'}
+        </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.map(product => (
+          {displayProducts.map(product => (
             <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
               <img
                 src={product.imageUrl || 'https://via.placeholder.com/300x200?text=Product'}
