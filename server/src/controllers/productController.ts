@@ -115,12 +115,8 @@ export const deleteProduct = async (req: Request, res: Response, next: NextFunct
 };
 
 /**
- * VECTOR SEARCH:
- * Requires MongoDB Atlas Vector Search index on "embedding" field.
- * Create index in Atlas dashboard:
- * - Field: "embedding"
- * - Dimensions: 384 (for mock) or 1536 (for OpenAI text-embedding-3-small)
- * - Similarity: "cosine"
+ * SEARCH:
+ * Tries Vector Search first, falls back to text search if Atlas index not configured.
  */
 export const semanticSearch = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -131,32 +127,52 @@ export const semanticSearch = async (req: Request, res: Response, next: NextFunc
       return;
     }
 
-    const queryEmbedding = await generateEmbedding(q as string);
-
-    const results = await Product.aggregate([
-      {
-        $vectorSearch: {
-          index: 'default',
-          path: 'embedding',
-          queryVector: queryEmbedding,
-          numCandidates: 100,
-          limit: 10,
+    // Try vector search first
+    try {
+      const queryEmbedding = await generateEmbedding(q as string);
+      const results = await Product.aggregate([
+        {
+          $vectorSearch: {
+            index: 'default',
+            path: 'embedding',
+            queryVector: queryEmbedding,
+            numCandidates: 100,
+            limit: 10,
+          },
         },
-      },
-      {
-        $project: {
-          name: 1,
-          description: 1,
-          price: 1,
-          category: 1,
-          score: { $meta: 'vectorSearchScore' },
+        {
+          $project: {
+            name: 1,
+            description: 1,
+            price: 1,
+            category: 1,
+            stock: 1,
+            imageUrl: 1,
+            score: { $meta: 'vectorSearchScore' },
+          },
         },
-      },
-    ] as any[]);
+      ] as any[]);
 
-    res.status(200).json({ success: true, data: results });
+      if (results.length > 0) {
+        res.status(200).json({ success: true, data: results });
+        return;
+      }
+    } catch (vectorError) {
+      console.log('Vector search failed, falling back to text search');
+    }
+
+    // Fallback to text search
+    const textResults = await Product.find({
+      $or: [
+        { name: { $regex: q as string, $options: 'i' } },
+        { description: { $regex: q as string, $options: 'i' } },
+        { category: { $regex: q as string, $options: 'i' } },
+      ],
+    }).limit(10).select('-embedding');
+
+    res.status(200).json({ success: true, data: textResults });
   } catch (error) {
-    console.error('Vector search error:', error);
-    res.status(500).json({ success: false, message: 'Vector search not available. Ensure Atlas Vector Search index is configured.' });
+    console.error('Search error:', error);
+    res.status(500).json({ success: false, message: 'Search failed' });
   }
 };
