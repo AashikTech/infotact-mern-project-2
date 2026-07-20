@@ -6,6 +6,7 @@ const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('customer');
   const [error, setError] = useState('');
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -13,8 +14,12 @@ const Register = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await register(name, email, password);
-      navigate('/');
+      await register(name, email, password, role);
+      if (role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/shop');
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed');
     }
@@ -46,7 +51,7 @@ const Register = () => {
               required
             />
           </div>
-          <div className="mb-6">
+          <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Password</label>
             <input
               type="password"
@@ -56,6 +61,17 @@ const Register = () => {
               required
               minLength={6}
             />
+          </div>
+          <div className="mb-6">
+            <label className="block text-sm font-medium mb-1">Register as</label>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full p-2 border rounded"
+            >
+              <option value="customer">Customer</option>
+              <option value="admin">Admin</option>
+            </select>
           </div>
           <button
             type="submit"

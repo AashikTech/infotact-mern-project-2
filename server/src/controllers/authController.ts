@@ -5,7 +5,7 @@ import { config } from '../config';
 
 export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -13,7 +13,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
       return;
     }
 
-    const user = await User.create({ name, email, password });
+    const user = await User.create({ name, email, password, role: role || 'customer' });
     const token = jwt.sign({ id: user._id }, config.jwtSecret, { expiresIn: '30d' });
 
     res.status(201).json({

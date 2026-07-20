@@ -11,7 +11,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string, role?: string) => Promise<void>;
   logout: () => void;
   loading: boolean;
 }
@@ -43,17 +43,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, password: string) => {
     const res = await api.post('/auth/login', { email, password });
     localStorage.setItem('token', res.data.data.token);
+    localStorage.setItem('user', JSON.stringify(res.data.data.user));
     setUser(res.data.data.user);
   };
 
-  const register = async (name: string, email: string, password: string) => {
-    const res = await api.post('/auth/register', { name, email, password });
+  const register = async (name: string, email: string, password: string, role: string = 'customer') => {
+    const res = await api.post('/auth/register', { name, email, password, role });
     localStorage.setItem('token', res.data.data.token);
+    localStorage.setItem('user', JSON.stringify(res.data.data.user));
     setUser(res.data.data.user);
   };
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setUser(null);
   };
 
