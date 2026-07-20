@@ -24,7 +24,6 @@ const generateMockEmbedding = (): number[] => {
 
 export const generateEmbedding = async (text: string): Promise<number[]> => {
   if (!config.openaiApiKey || config.openaiApiKey === 'your_openai_api_key_here') {
-    console.warn('⚠️ OpenAI API key not set. Using mock embedding.');
     return generateMockEmbedding();
   }
 
@@ -35,8 +34,6 @@ export const generateEmbedding = async (text: string): Promise<number[]> => {
     });
     return response.data[0].embedding;
   } catch (error) {
-    console.error('OpenAI embedding error:', error);
-    console.warn('⚠️ Falling back to mock embedding.');
     return generateMockEmbedding();
   }
 };
