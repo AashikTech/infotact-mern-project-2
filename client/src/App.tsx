@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Products from './pages/Products';
 import Search from './pages/Search';
+import AdminUsers from './pages/AdminUsers';
 import Shop from './pages/Shop';
 
 const RoleRedirect = () => {
@@ -29,6 +30,7 @@ function App() {
             <Route index element={<Products />} />
             <Route path="products" element={<Products />} />
             <Route path="search" element={<Search />} />
+            <Route path="users" element={<AdminUsers />} />
           </Route>
 
           {/* Customer Routes - Only customers can access */}

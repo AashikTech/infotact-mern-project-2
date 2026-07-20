@@ -65,3 +65,35 @@ export const getMe = async (req: Request, res: Response, next: NextFunction): Pr
     next(error);
   }
 };
+
+// Admin only: Create new admin
+export const createAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { name, email, password } = req.body;
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      res.status(400).json({ success: false, message: 'User already exists' });
+      return;
+    }
+
+    const user = await User.create({ name, email, password, role: 'admin' });
+
+    res.status(201).json({
+      success: true,
+      data: { _id: user._id, name: user.name, email: user.email, role: user.role },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Admin only: Get all users
+export const getAllUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const users = await User.find().select('-password');
+    res.status(200).json({ success: true, data: users });
+  } catch (error) {
+    next(error);
+  }
+};
