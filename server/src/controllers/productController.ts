@@ -120,6 +120,39 @@ export const deleteProduct = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+// Related terms for smarter search
+const relatedTerms: { [key: string]: string[] } = {
+  'dress': ['Clothing', 'Shirt', 'T-Shirt', 'Hoodie', 'Sweater', 'Jacket'],
+  'shirt': ['Clothing', 'T-Shirt', 'Hoodie', 'Sweater'],
+  'pants': ['Clothing', 'Jeans', 'Track Pants', 'Shorts'],
+  'shoes': ['Clothing', 'Sneakers', 'Running Shoes'],
+  'jacket': ['Clothing', 'Winter Jacket', 'Raincoat'],
+  'phone': ['Electronics', 'Smartphone', 'Mobile'],
+  'computer': ['Electronics', 'Laptop', 'Desktop'],
+  'tv': ['Electronics', 'Television', 'Monitor'],
+  'headphones': ['Electronics', 'Earbuds', 'Headset'],
+  'kitchen': ['Home & Kitchen', 'Coffee Maker', 'Blender', 'Toaster'],
+  'food': ['Home & Kitchen', 'Coffee', 'Mug'],
+  'game': ['Toys & Games', 'Board Game', 'Card Game'],
+  'toy': ['Toys & Games', 'Building Blocks', 'Lego'],
+  'book': ['Books', 'Novel', 'Guide'],
+  'sport': ['Sports & Outdoors', 'Football', 'Cricket', 'Yoga'],
+  'fitness': ['Sports & Outdoors', 'Yoga Mat', 'Dumbbells', 'Gym'],
+};
+
+const getSearchTerms = (query: string): string[] => {
+  const lowerQuery = query.toLowerCase();
+  const terms = [query];
+
+  for (const [key, related] of Object.entries(relatedTerms)) {
+    if (lowerQuery.includes(key) || key.includes(lowerQuery)) {
+      terms.push(...related);
+    }
+  }
+
+  return [...new Set(terms)];
+};
+
 /**
  * SEARCH:
  * Tries Vector Search first, falls back to text search if Atlas index not configured.
@@ -167,15 +200,23 @@ export const semanticSearch = async (req: Request, res: Response, next: NextFunc
       console.log('Vector search failed, falling back to text search');
     }
 
-    // Fallback to text search - get diverse results
+    // Get related search terms
+    const searchTerms = getSearchTerms(q as string);
+
+    // Build search conditions
+    const searchConditions = searchTerms.map(term => ({
+      $or: [
+        { name: { $regex: term, $options: 'i' } },
+        { description: { $regex: term, $options: 'i' } },
+        { category: { $regex: term, $options: 'i' } },
+      ],
+    }));
+
+    // Fallback to text search with related terms
     const textResults = await Product.aggregate([
       {
         $match: {
-          $or: [
-            { name: { $regex: q as string, $options: 'i' } },
-            { description: { $regex: q as string, $options: 'i' } },
-            { category: { $regex: q as string, $options: 'i' } },
-          ],
+          $or: searchConditions,
         },
       },
       // Group by name to get unique products
@@ -186,8 +227,8 @@ export const semanticSearch = async (req: Request, res: Response, next: NextFunc
         },
       },
       { $replaceRoot: { newRoot: '$doc' } },
-      // Limit to 6 unique results
-      { $limit: 6 },
+      // Limit to 8 unique results
+      { $limit: 8 },
       // Exclude embedding field
       { $project: { embedding: 0 } },
     ]);
