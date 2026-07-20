@@ -24,15 +24,15 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* Admin Routes */}
-          <Route path="/admin" element={<ProtectedRoute><Dashboard /></ProtectedRoute>}>
+          {/* Admin Routes - Only admin can access */}
+          <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><Dashboard /></ProtectedRoute>}>
             <Route index element={<Products />} />
             <Route path="products" element={<Products />} />
             <Route path="search" element={<Search />} />
           </Route>
 
-          {/* Customer Routes */}
-          <Route path="/shop" element={<ProtectedRoute><Shop /></ProtectedRoute>} />
+          {/* Customer Routes - Only customers can access */}
+          <Route path="/shop" element={<ProtectedRoute requiredRole="customer"><Shop /></ProtectedRoute>} />
 
           {/* Default redirect based on role */}
           <Route path="/" element={<RoleRedirect />} />

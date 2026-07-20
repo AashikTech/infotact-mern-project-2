@@ -17,6 +17,18 @@ const Login = () => {
     try {
       await login(email, password);
       const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+      // Check if selected role matches actual role
+      if (role === 'admin' && user.role !== 'admin') {
+        setError('This account is not an admin. Please login as Customer.');
+        return;
+      }
+      if (role === 'customer' && user.role === 'admin') {
+        setError('This is an admin account. Please login as Admin.');
+        return;
+      }
+
+      // Redirect based on actual role
       if (user.role === 'admin') {
         navigate('/admin');
       } else {
