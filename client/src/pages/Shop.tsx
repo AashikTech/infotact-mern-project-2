@@ -12,6 +12,8 @@ interface Product {
   imageUrl: string;
 }
 
+const categories = ['All', 'Jackets', 'Shoes', 'Electronics', 'Books', 'Toys', 'Home', 'Sports'];
+
 const Shop = () => {
   const { user, logout } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
@@ -20,14 +22,18 @@ const Shop = () => {
   const [cartCount, setCartCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Product[] | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   const fetchProducts = async () => {
-    const res = await api.get(`/products?page=${page}&limit=8`);
+    const categoryParam = selectedCategory !== 'All' ? `&category=${selectedCategory}` : '';
+    const res = await api.get(`/products?page=${page}&limit=8${categoryParam}`);
     setProducts(res.data.data);
     setTotal(res.data.pagination.total);
   };
 
-  useEffect(() => { fetchProducts(); }, [page]);
+  useEffect(() => { fetchProducts(); }, [page, selectedCategory]);
+
+  useEffect(() => { setPage(1); }, [selectedCategory]);
 
   const handleSearch = async () => {
     if (!searchQuery) {
@@ -96,14 +102,48 @@ const Shop = () => {
           )}
         </div>
 
+        {/* Category Filters */}
+        {!searchResults && (
+          <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition ${
+                  selectedCategory === cat
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 border hover:bg-gray-100'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        )}
+
         <h2 className="text-2xl font-bold mb-6">
-          {searchResults ? `Search Results (${searchResults.length})` : 'All Products'}
+          {searchResults
+            ? `Search Results (${searchResults.length})`
+            : selectedCategory === 'All'
+              ? 'All Products'
+              : selectedCategory
+          }
         </h2>
 
-        {displayProducts.length === 0 && searchResults && (
+        {displayProducts.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No products found for "{searchQuery}"</p>
-            <p className="text-gray-400 text-sm mt-2">Try different keywords like "jackets", "shoes", or "electronics"</p>
+            <p className="text-gray-500 text-lg">
+              {searchResults
+                ? `No products found for "${searchQuery}"`
+                : `No products in ${selectedCategory}`
+              }
+            </p>
+            <p className="text-gray-400 text-sm mt-2">
+              {searchResults
+                ? 'Try different keywords like "jackets", "shoes", or "electronics"'
+                : 'Try selecting a different category'
+              }
+            </p>
           </div>
         )}
 

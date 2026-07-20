@@ -12,8 +12,9 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
+    const category = req.query.category as string;
 
-    const cacheKey = `products:all:page:${page}:limit:${limit}`;
+    const cacheKey = `products:all:page:${page}:limit:${limit}:cat:${category || 'all'}`;
     const cachedData = await cacheGet(cacheKey);
 
     if (cachedData) {
@@ -22,8 +23,13 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
       return;
     }
 
-    const products = await Product.find().select('-embedding').skip(skip).limit(limit);
-    const total = await Product.countDocuments();
+    const query: any = {};
+    if (category) {
+      query.category = category;
+    }
+
+    const products = await Product.find(query).select('-embedding').skip(skip).limit(limit);
+    const total = await Product.countDocuments(query);
 
     const responseData = {
       success: true,
