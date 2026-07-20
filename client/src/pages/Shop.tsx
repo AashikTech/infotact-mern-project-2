@@ -12,7 +12,7 @@ interface Product {
   imageUrl: string;
 }
 
-const categories = ['All', 'Jackets', 'Shoes', 'Electronics', 'Books', 'Toys', 'Home', 'Sports'];
+const categories = ['All', 'Electronics', 'Clothing', 'Home & Kitchen', 'Sports & Outdoors', 'Books', 'Toys & Games'];
 
 const Shop = () => {
   const { user, logout } = useAuth();

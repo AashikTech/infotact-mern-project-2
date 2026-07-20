@@ -2,11 +2,43 @@ import mongoose from 'mongoose';
 import { Product } from '../models/Product';
 import { config } from '../config';
 
-const categories = ['Jackets', 'Shoes', 'Electronics', 'Books', 'Toys', 'Home', 'Sports'];
-const adjectives = ['Premium', 'Warm', 'Lightweight', 'Insulated', 'Waterproof', 'Smart', 'Eco-friendly'];
-const nouns = ['Snow Coat', 'Running Sneakers', 'Wireless Earbuds', 'Yoga Mat', 'Coffee Maker', 'Desk Lamp', 'Backpack', 'Sunglasses', 'Watch', 'Headphones'];
+// Better, more realistic categories
+const productData = {
+  'Electronics': [
+    'Wireless Earbuds', 'Bluetooth Speaker', 'Smart Watch', 'Laptop', 'Phone',
+    'Tablet', 'Camera', 'Headphones', 'Monitor', 'Keyboard', 'Mouse', 'Charger',
+    'Power Bank', 'USB Cable', 'Webcam', 'Microphone', 'Drone', 'TV', 'Soundbar'
+  ],
+  'Clothing': [
+    'Winter Jacket', 'Running Shoes', 'Denim Jeans', 'Cotton T-Shirt', 'Hoodie',
+    'Sneakers', 'Formal Shirt', 'Track Pants', 'Sweater', 'Cap', 'Socks',
+    'Gloves', 'Scarf', 'Raincoat', 'Shorts', 'Sunglasses', 'Backpack', 'Belt'
+  ],
+  'Home & Kitchen': [
+    'Coffee Maker', 'Blender', 'Toaster', 'Air Fryer', 'Vacuum Cleaner',
+    'Table Lamp', 'Desk Fan', 'Water Bottle', 'Food Container', 'Knife Set',
+    'Cutting Board', 'Mug Set', 'Bed Sheet', 'Pillow', 'Curtains', 'Rug'
+  ],
+  'Sports & Outdoors': [
+    'Yoga Mat', 'Dumbbells', 'Resistance Bands', 'Running Watch', 'Football',
+    'Cricket Bat', 'Basketball', 'Tennis Racket', 'Cycling Helmet', 'Hiking Boots',
+    'Camping Tent', 'Sleeping Bag', 'Water Bottle', 'Jump Rope', 'Boxing Gloves'
+  ],
+  'Books': [
+    'JavaScript Guide', 'Python Cookbook', 'Design Patterns', 'Clean Code',
+    'Atomic Habits', 'Think and Grow Rich', 'Sapiens', 'The Alchemist',
+    'Harry Potter', 'Lord of the Rings', 'Science Fiction Novel', 'Cookbook'
+  ],
+  'Toys & Games': [
+    'Building Blocks', 'Puzzle Set', 'Remote Control Car', 'Board Game',
+    'Action Figure', 'Doll House', 'Lego Set', 'Card Game', 'Drone Toy',
+    'Robot Kit', 'Art Set', 'Play Dough', 'Yo-Yo', 'Train Set'
+  ]
+};
 
-// Mock embedding generator
+const adjectives = ['Premium', 'Classic', 'Pro', 'Ultra', 'Essential', 'Elite', 'Advanced', 'Basic'];
+const brands = ['Nike', 'Apple', 'Samsung', 'Sony', 'Adidas', 'Puma', 'LG', 'Dell', 'HP', 'Lenovo', 'Boat', 'JBL', 'Canon', 'Nikon'];
+
 const generateMockEmbedding = (): number[] => {
   const embedding: number[] = [];
   for (let i = 0; i < 384; i++) {
@@ -16,55 +48,46 @@ const generateMockEmbedding = (): number[] => {
   return embedding.map(val => val / magnitude);
 };
 
-// Generate unique products - no duplicates
-const generateUniqueProducts = (count: number) => {
+const generateProducts = () => {
   const products = [];
   const usedNames = new Set();
 
-  // First: generate all unique adjective + noun combinations
-  for (const adj of adjectives) {
-    for (const noun of nouns) {
-      const name = `${adj} ${noun}`;
-      if (!usedNames.has(name)) {
-        usedNames.add(name);
-        const category = categories[Math.floor(Math.random() * categories.length)];
+  for (const [category, items] of Object.entries(productData)) {
+    for (const item of items) {
+      // Base product
+      if (!usedNames.has(item)) {
+        usedNames.add(item);
         products.push({
-          name,
-          description: `${name} is a ${adj.toLowerCase()} ${noun.toLowerCase()} perfect for ${category.toLowerCase()} enthusiasts. High quality and durable.`,
-          price: Math.round((Math.random() * 490 + 10) * 100) / 100,
+          name: item,
+          description: `High quality ${item.toLowerCase()} for everyday use. Durable and reliable.`,
+          price: Math.round((Math.random() * 400 + 20) * 100) / 100,
           category,
-          stock: Math.floor(Math.random() * 101),
-          imageUrl: `https://picsum.photos/seed/${name.replace(/\s/g, '-')}/400/400`,
+          stock: Math.floor(Math.random() * 50) + 5,
+          imageUrl: `https://picsum.photos/seed/${item.replace(/\s/g, '-')}/400/400`,
+          embedding: generateMockEmbedding(),
+        });
+      }
+
+      // Premium/branded version
+      const randomBrand = brands[Math.floor(Math.random() * brands.length)];
+      const randomAdj = adjectives[Math.floor(Math.random() * adjectives.length)];
+      const brandedName = `${randomBrand} ${randomAdj} ${item}`;
+      if (!usedNames.has(brandedName)) {
+        usedNames.add(brandedName);
+        products.push({
+          name: brandedName,
+          description: `${randomAdj} ${item.toLowerCase()} by ${randomBrand}. Premium quality and design.`,
+          price: Math.round((Math.random() * 300 + 50) * 100) / 100,
+          category,
+          stock: Math.floor(Math.random() * 30) + 5,
+          imageUrl: `https://picsum.photos/seed/${brandedName.replace(/\s/g, '-')}/400/400`,
           embedding: generateMockEmbedding(),
         });
       }
     }
   }
 
-  // Add more unique products with brand names if needed
-  const brands = ['Nike', 'Apple', 'Samsung', 'Sony', 'Adidas', 'Puma', 'LG', 'Dell', 'HP', 'Lenovo'];
-  const extraProducts = ['Laptop', 'Phone', 'Tablet', 'Camera', 'Speaker', 'Keyboard', 'Mouse', 'Monitor', 'Printer', 'Scanner'];
-
-  for (const brand of brands) {
-    for (const extra of extraProducts) {
-      const name = `${brand} ${extra}`;
-      if (!usedNames.has(name) && products.length < count) {
-        usedNames.add(name);
-        const category = categories[Math.floor(Math.random() * categories.length)];
-        products.push({
-          name,
-          description: `${name} - High quality ${extra.toLowerCase()} from ${brand}. Perfect for ${category.toLowerCase()} enthusiasts.`,
-          price: Math.round((Math.random() * 490 + 10) * 100) / 100,
-          category,
-          stock: Math.floor(Math.random() * 101),
-          imageUrl: `https://picsum.photos/seed/${name.replace(/\s/g, '-')}/400/400`,
-          embedding: generateMockEmbedding(),
-        });
-      }
-    }
-  }
-
-  return products.slice(0, count);
+  return products;
 };
 
 const seed = async () => {
@@ -78,7 +101,7 @@ const seed = async () => {
     await Product.deleteMany({});
     console.log('Cleared existing products');
 
-    const products = generateUniqueProducts(500);
+    const products = generateProducts();
     console.log(`Generated ${products.length} unique products`);
 
     const batchSize = 100;
