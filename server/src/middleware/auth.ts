@@ -13,7 +13,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
     }
 
     const decoded = jwt.verify(token, config.jwtSecret) as { id: string };
-    const user = await User.findById(decoded.id);
+    const user = await User.findById(decoded.id).select('+role');
 
     if (!user) {
       res.status(401).json({ success: false, message: 'Not authorized' });
@@ -30,8 +30,13 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 export const authorizeAdmin = (req: Request, res: Response, next: NextFunction): void => {
   const user = (req as any).user;
 
-  if (!user || user.role !== 'admin') {
-    res.status(403).json({ success: false, message: 'Admin access required' });
+  if (!user) {
+    res.status(403).json({ success: false, message: 'Admin access required - no user' });
+    return;
+  }
+
+  if (user.role !== 'admin') {
+    res.status(403).json({ success: false, message: `Admin access required - your role: ${user.role}` });
     return;
   }
 
