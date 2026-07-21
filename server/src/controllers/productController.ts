@@ -100,6 +100,29 @@ export const updateProduct = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+export const createProduct = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { name, description, price, category, stock, imageUrl } = req.body;
+
+    const product = await Product.create({
+      name,
+      description,
+      price,
+      category,
+      stock,
+      imageUrl: imageUrl || '',
+      embedding: [],
+    });
+
+    // Invalidate cache
+    await cacheDeletePattern('products:all:*');
+
+    res.status(201).json({ success: true, data: product });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const deleteProduct = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
