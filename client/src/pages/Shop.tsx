@@ -143,9 +143,9 @@ const Shop = () => {
 
         {/* Products */}
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          <div className="product-grid">
             {[1,2,3,4].map(i => (
-              <div key={i} className="shimmer-elegant" style={{ height: '360px' }}></div>
+              <div key={i} className="shimmer-elegant" style={{ height: '380px', borderRadius: '4px' }}></div>
             ))}
           </div>
         ) : displayProducts.length === 0 ? (
@@ -155,32 +155,34 @@ const Shop = () => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          <div className="product-grid">
             {displayProducts.map((product, index) => (
               <div
                 key={product._id}
                 className="product-card-elegant"
                 style={{ animation: `fadeInUp 0.5s ease forwards`, animationDelay: `${index * 0.1}s`, opacity: 0 }}
               >
-                <div className="relative overflow-hidden" style={{ height: '240px' }}>
+                <div className="relative overflow-hidden product-image-container">
                   <img
-                    src={product.imageUrl || `https://placehold.co/400x400/f5f3f0/1a1a1a?text=${encodeURIComponent(product.name.substring(0, 8))}`}
+                    src={product.imageUrl || `https://placehold.co/400x300/f5f3f0/1a1a1a?text=${encodeURIComponent(product.name.substring(0, 8))}`}
                     alt={product.name}
-                    className="w-full h-full object-cover"
+                    className="product-image"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src = `https://placehold.co/400x400/f5f3f0/1a1a1a?text=${encodeURIComponent(product.name.substring(0, 8))}`;
+                      target.src = `https://placehold.co/400x300/f5f3f0/1a1a1a?text=${encodeURIComponent(product.name.substring(0, 8))}`;
                     }}
                   />
                   <div className="absolute top-4 left-4">
                     <span className="category-tag">{product.category}</span>
                   </div>
                 </div>
-                <div className="p-6">
-                  <h3 className="font-display text-lg mb-2" style={{ color: 'var(--color-black)' }}>{product.name}</h3>
-                  <p className="text-sm mb-4 line-clamp-2" style={{ color: 'var(--color-silver)', fontStyle: 'italic' }}>
-                    {product.description}
-                  </p>
+                <div className="p-6 card-content">
+                  <div>
+                    <h3 className="font-display text-lg mb-2" style={{ color: 'var(--color-black)' }}>{product.name}</h3>
+                    <p className="text-sm mb-4 line-clamp-2" style={{ color: 'var(--color-silver)', fontStyle: 'italic' }}>
+                      {product.description}
+                    </p>
+                  </div>
                   <div className="flex items-center justify-between">
                     <span className="price-elegant">${product.price}</span>
                     <button

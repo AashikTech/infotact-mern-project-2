@@ -31,107 +31,74 @@ const AdminUsers = () => {
       setForm({ name: '', email: '', password: '' });
       setShowForm(false);
       fetchUsers();
-      alert('Admin created successfully!');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to create admin');
     }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold">User Management</h2>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
-        >
+    <div>
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="font-display text-2xl" style={{ color: 'var(--color-black)' }}>Users</h2>
+        <button onClick={() => setShowForm(!showForm)} className="btn-elegant btn-gold text-xs">
           {showForm ? 'Cancel' : '+ Add Admin'}
         </button>
       </div>
 
       {showForm && (
-        <div className="bg-gray-50 p-4 rounded-lg mb-6">
-          <h3 className="font-semibold mb-3">Create New Admin</h3>
-          {error && <div className="bg-red-100 text-red-700 p-2 rounded mb-3 text-sm">{error}</div>}
+        <div className="card-elegant p-6 mb-8" style={{ animation: 'fadeInUp 0.4s ease' }}>
+          <h3 className="font-display text-lg mb-4" style={{ color: 'var(--color-black)' }}>Create Admin</h3>
+          {error && (
+            <div className="mb-4 p-3 text-sm" style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b' }}>
+              {error}
+            </div>
+          )}
           <form onSubmit={handleCreateAdmin} className="flex gap-3">
-            <input
-              value={form.name}
-              onChange={e => setForm({ ...form, name: e.target.value })}
-              placeholder="Name"
-              className="flex-1 p-2 border rounded"
-              required
-            />
-            <input
-              value={form.email}
-              onChange={e => setForm({ ...form, email: e.target.value })}
-              placeholder="Email"
-              type="email"
-              className="flex-1 p-2 border rounded"
-              required
-            />
-            <div className="flex-1 relative">
-              <input
-                value={form.password}
-                onChange={e => setForm({ ...form, password: e.target.value })}
-                placeholder="Password"
-                type={showPassword ? 'text' : 'password'}
-                className="w-full p-2 pr-10 border rounded"
-                required
-                minLength={6}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-              >
+            <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Name" className="input-elegant flex-1" required />
+            <input value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="Email" type="email" className="input-elegant flex-1" required />
+            <div className="relative flex-1">
+              <input value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} placeholder="Password" type={showPassword ? 'text' : 'password'} className="input-elegant pr-10" required minLength={6} />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-silver)' }}>
                 {showPassword ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                    <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-                  </svg>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                 ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clipRule="evenodd" />
-                    <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
-                  </svg>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
                 )}
               </button>
             </div>
-            <button type="submit" className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-              Create
-            </button>
+            <button type="submit" className="btn-elegant btn-gold">Create</button>
           </form>
         </div>
       )}
 
-      <table className="w-full">
-        <thead>
-          <tr className="border-b">
-            <th className="text-left py-2">Name</th>
-            <th className="text-left py-2">Email</th>
-            <th className="text-left py-2">Role</th>
-            <th className="text-left py-2">Joined</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map(user => (
-            <tr key={user._id} className="border-b">
-              <td className="py-2">{user.name}</td>
-              <td className="py-2">{user.email}</td>
-              <td className="py-2">
-                <span className={`px-2 py-1 rounded text-xs ${
-                  user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
-                }`}>
-                  {user.role}
-                </span>
-              </td>
-              <td className="py-2 text-sm text-gray-500">
-                {new Date(user.createdAt).toLocaleDateString()}
-              </td>
+      <div className="card-elegant overflow-hidden">
+        <table className="w-full">
+          <thead>
+            <tr style={{ background: 'var(--color-black)' }}>
+              <th className="text-left py-4 px-6 text-xs font-semibold tracking-wider uppercase" style={{ color: 'var(--color-silver)' }}>Name</th>
+              <th className="text-left py-4 px-6 text-xs font-semibold tracking-wider uppercase" style={{ color: 'var(--color-silver)' }}>Email</th>
+              <th className="text-left py-4 px-6 text-xs font-semibold tracking-wider uppercase" style={{ color: 'var(--color-silver)' }}>Role</th>
+              <th className="text-left py-4 px-6 text-xs font-semibold tracking-wider uppercase" style={{ color: 'var(--color-silver)' }}>Joined</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {users.map((user, index) => (
+              <tr key={user._id} className="border-b" style={{ borderColor: 'var(--color-light)', animation: `fadeIn 0.3s ease ${index * 0.05}s` }}>
+                <td className="py-4 px-6 font-medium">{user.name}</td>
+                <td className="py-4 px-6" style={{ color: 'var(--color-gray)' }}>{user.email}</td>
+                <td className="py-4 px-6">
+                  <span className="category-tag" style={{ borderColor: user.role === 'admin' ? 'var(--color-gold)' : 'var(--color-light)', color: user.role === 'admin' ? 'var(--color-gold)' : 'var(--color-gray)' }}>
+                    {user.role}
+                  </span>
+                </td>
+                <td className="py-4 px-6 text-sm" style={{ color: 'var(--color-silver)' }}>
+                  {new Date(user.createdAt).toLocaleDateString()}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

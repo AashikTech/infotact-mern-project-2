@@ -313,7 +313,181 @@ body {
   animation: shimmer 1.5s infinite;
 }
 
-/* ===== SCROLLBAR ===== */
+/* ===== GLOBAL ALIGNMENT FIXES ===== */
+img {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Product Grid - Perfect Alignment */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  align-items: start;
+}
+
+/* Image Aspect Ratio Fix */
+.product-image {
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* Consistent Card Heights */
+.product-card-elegant {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.product-card-elegant .card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Navigation Alignment */
+.nav-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Container Widths */
+.container-elegant {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Table Alignment */
+.table-elegant {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-elegant th,
+.table-elegant td {
+  text-align: left;
+  padding: 1rem 1.5rem;
+}
+
+.table-elegant th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-silver);
+  border-bottom: 2px solid var(--color-light);
+}
+
+.table-elegant td {
+  border-bottom: 1px solid var(--color-light);
+  vertical-align: middle;
+}
+
+.table-elegant tr:last-child td {
+  border-bottom: none;
+}
+
+/* Flex Alignment Utilities */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-start {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* Spacing Utilities */
+.gap-xs { gap: 0.25rem; }
+.gap-sm { gap: 0.5rem; }
+.gap-md { gap: 1rem; }
+.gap-lg { gap: 1.5rem; }
+.gap-xl { gap: 2rem; }
+
+/* Padding Utilities */
+.p-xs { padding: 0.25rem; }
+.p-sm { padding: 0.5rem; }
+.p-md { padding: 1rem; }
+.p-lg { padding: 1.5rem; }
+.p-xl { padding: 2rem; }
+
+/* Margin Utilities */
+.mt-xs { margin-top: 0.25rem; }
+.mt-sm { margin-top: 0.5rem; }
+.mt-md { margin-top: 1rem; }
+.mt-lg { margin-top: 1.5rem; }
+.mt-xl { margin-top: 2rem; }
+
+.mb-xs { margin-bottom: 0.25rem; }
+.mb-sm { margin-bottom: 0.5rem; }
+.mb-md { margin-bottom: 1rem; }
+.mb-lg { margin-bottom: 1.5rem; }
+.mb-xl { margin-bottom: 2rem; }
+
+/* Text Alignment */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+/* Vertical Alignment */
+.align-top { vertical-align: top; }
+.align-middle { vertical-align: middle; }
+.align-bottom { vertical-align: bottom; }
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .container-elegant {
+    padding: 0 1rem;
+  }
+
+  .nav-content {
+    padding: 0 1rem;
+  }
+
+  .table-elegant th,
+  .table-elegant td {
+    padding: 0.75rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -331,7 +505,7 @@ body {
   background: var(--color-gray);
 }
 
-/* ===== SELECTION ===== */
+/* Selection */
 ::selection {
   background: var(--color-gold);
   color: var(--color-white);
