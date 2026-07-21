@@ -157,9 +157,13 @@ const Shop = () => {
           {displayProducts.map(product => (
             <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
               <img
-                src={product.imageUrl || 'https://via.placeholder.com/300x200?text=Product'}
+                src={product.imageUrl || `https://placehold.co/400x400/3498db/white?text=${encodeURIComponent(product.category.substring(0, 3))}`}
                 alt={product.name}
                 className="w-full h-48 object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = `https://placehold.co/400x400/95a5a6/white?text=${encodeURIComponent(product.name.substring(0, 10))}`;
+                }}
               />
               <div className="p-4">
                 <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{product.category}</span>
