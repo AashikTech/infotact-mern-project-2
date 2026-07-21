@@ -21,21 +21,19 @@ const Products = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({ name: '', price: 0, stock: 0 });
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newProduct, setNewProduct] = useState({
-    name: '',
-    description: '',
-    price: 0,
-    category: 'Electronics',
-    stock: 0,
-    imageUrl: '',
-  });
+  const [newProduct, setNewProduct] = useState({ name: '', description: '', price: 0, category: 'Electronics', stock: 0, imageUrl: '' });
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchProducts = async () => {
-    const res = await api.get(`/products?page=${page}&limit=10`);
-    setProducts(res.data.data);
-    setTotal(res.data.pagination.total);
-    const cache = res.headers['x-cache'];
-    setCacheStatus(cache === 'HIT' ? 'HIT' : 'MISS');
+    setIsLoading(true);
+    try {
+      const res = await api.get(`/products?page=${page}&limit=10`);
+      setProducts(res.data.data);
+      setTotal(res.data.pagination.total);
+      setCacheStatus(res.headers['x-cache'] === 'HIT' ? 'HIT' : 'MISS');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => { fetchProducts(); }, [page]);
@@ -58,7 +56,6 @@ const Products = () => {
       setShowAddForm(false);
       setNewProduct({ name: '', description: '', price: 0, category: 'Electronics', stock: 0, imageUrl: '' });
       fetchProducts();
-      alert('Product added successfully!');
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to add product');
     }
@@ -75,143 +72,109 @@ const Products = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Products</h2>
+    <div>
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">
-          <div className={`px-3 py-1 rounded text-sm font-medium ${
-            cacheStatus === 'HIT' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-          }`}>
-            Cache: {cacheStatus}
-          </div>
-          <button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
-          >
-            <span className="text-lg font-bold">+</span>
-            Add Product
-          </button>
+          <h2 className="text-2xl font-bold gradient-text">Products</h2>
+          {cacheStatus && (
+            <span className={`px-3 py-1 rounded-full text-xs font-bold ${cacheStatus === 'HIT' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+              Cache: {cacheStatus}
+            </span>
+          )}
         </div>
+        <button onClick={() => setShowAddForm(!showAddForm)} className="btn btn-success">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Add Product
+        </button>
       </div>
 
       {/* Add Product Form */}
       {showAddForm && (
-        <div className="bg-gray-50 p-4 rounded-lg mb-4">
-          <h3 className="font-semibold mb-3">Add New Product</h3>
-          <form onSubmit={handleAddProduct} className="grid grid-cols-2 gap-3">
-            <input
-              value={newProduct.name}
-              onChange={e => setNewProduct({ ...newProduct, name: e.target.value })}
-              placeholder="Product Name"
-              className="p-2 border rounded"
-              required
-            />
-            <input
-              type="number"
-              value={newProduct.price || ''}
-              onChange={e => setNewProduct({ ...newProduct, price: Number(e.target.value) })}
-              placeholder="Price"
-              className="p-2 border rounded"
-              required
-            />
-            <input
-              type="number"
-              value={newProduct.stock || ''}
-              onChange={e => setNewProduct({ ...newProduct, stock: Number(e.target.value) })}
-              placeholder="Stock"
-              className="p-2 border rounded"
-              required
-            />
-            <select
-              value={newProduct.category}
-              onChange={e => setNewProduct({ ...newProduct, category: e.target.value })}
-              className="p-2 border rounded"
-            >
-              {categories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
+        <div className="glass-card p-6 mb-6 card-animate">
+          <h3 className="font-bold text-lg mb-4 gradient-text">Add New Product</h3>
+          <form onSubmit={handleAddProduct} className="grid grid-cols-2 gap-4">
+            <input value={newProduct.name} onChange={e => setNewProduct({ ...newProduct, name: e.target.value })} placeholder="Product Name" className="input-glass" required />
+            <input type="number" value={newProduct.price || ''} onChange={e => setNewProduct({ ...newProduct, price: Number(e.target.value) })} placeholder="Price" className="input-glass" required />
+            <input type="number" value={newProduct.stock || ''} onChange={e => setNewProduct({ ...newProduct, stock: Number(e.target.value) })} placeholder="Stock" className="input-glass" required />
+            <select value={newProduct.category} onChange={e => setNewProduct({ ...newProduct, category: e.target.value })} className="input-glass">
+              {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
             </select>
-            <input
-              value={newProduct.imageUrl}
-              onChange={e => setNewProduct({ ...newProduct, imageUrl: e.target.value })}
-              placeholder="Image URL (optional)"
-              className="p-2 border rounded col-span-2"
-            />
-            <textarea
-              value={newProduct.description}
-              onChange={e => setNewProduct({ ...newProduct, description: e.target.value })}
-              placeholder="Description"
-              className="p-2 border rounded col-span-2"
-              rows={2}
-              required
-            />
-            <div className="col-span-2 flex gap-2">
-              <button type="submit" className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                Add Product
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowAddForm(false)}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-              >
-                Cancel
-              </button>
+            <input value={newProduct.imageUrl} onChange={e => setNewProduct({ ...newProduct, imageUrl: e.target.value })} placeholder="Image URL (optional)" className="input-glass col-span-2" />
+            <textarea value={newProduct.description} onChange={e => setNewProduct({ ...newProduct, description: e.target.value })} placeholder="Description" className="input-glass col-span-2" rows={2} required />
+            <div className="col-span-2 flex gap-3">
+              <button type="submit" className="btn btn-success">Add Product</button>
+              <button type="button" onClick={() => setShowAddForm(false)} className="btn btn-outline">Cancel</button>
             </div>
           </form>
         </div>
       )}
 
-      <table className="w-full">
-        <thead>
-          <tr className="border-b">
-            <th className="text-left py-2">Name</th>
-            <th className="text-left py-2">Category</th>
-            <th className="text-left py-2">Price</th>
-            <th className="text-left py-2">Stock</th>
-            <th className="text-left py-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map(p => (
-            <tr key={p._id} className={`border-b ${cacheStatus === 'HIT' ? 'bg-green-50' : ''}`}>
-              <td className="py-2">
-                {editingId === p._id ? (
-                  <input value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} className="border p-1 rounded" />
-                ) : p.name}
-              </td>
-              <td className="py-2">{p.category}</td>
-              <td className="py-2">
-                {editingId === p._id ? (
-                  <input type="number" value={editForm.price} onChange={e => setEditForm({...editForm, price: Number(e.target.value)})} className="border p-1 rounded w-20" />
-                ) : `$${p.price}`}
-              </td>
-              <td className="py-2">
-                {editingId === p._id ? (
-                  <input type="number" value={editForm.stock} onChange={e => setEditForm({...editForm, stock: Number(e.target.value)})} className="border p-1 rounded w-16" />
-                ) : p.stock}
-              </td>
-              <td className="py-2">
-                {editingId === p._id ? (
-                  <>
-                    <button onClick={() => handleSave(p._id)} className="text-green-600 mr-2">Save</button>
-                    <button onClick={() => setEditingId(null)} className="text-gray-600">Cancel</button>
-                  </>
-                ) : (
-                  <div className="flex gap-2">
-                    <button onClick={() => handleEdit(p)} className="text-blue-600">Edit</button>
-                    <button onClick={() => handleDelete(p._id)} className="text-red-600">Delete</button>
-                  </div>
-                )}
-              </td>
+      {/* Products Table */}
+      <div className="glass-card overflow-hidden">
+        <table className="w-full">
+          <thead>
+            <tr className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+              <th className="text-left py-4 px-6 font-semibold">Name</th>
+              <th className="text-left py-4 px-6 font-semibold">Category</th>
+              <th className="text-left py-4 px-6 font-semibold">Price</th>
+              <th className="text-left py-4 px-6 font-semibold">Stock</th>
+              <th className="text-left py-4 px-6 font-semibold">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {products.map((p, index) => (
+              <tr key={p._id} className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}>
+                <td className="py-4 px-6">
+                  {editingId === p._id ? (
+                    <input value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} className="input-glass py-2 px-3 text-sm" />
+                  ) : <span className="font-medium">{p.name}</span>}
+                </td>
+                <td className="py-4 px-6">
+                  <span className={`category-badge category-${p.category.toLowerCase().replace(/[^a-z]/g, '')}`}>
+                    {p.category}
+                  </span>
+                </td>
+                <td className="py-4 px-6">
+                  {editingId === p._id ? (
+                    <input type="number" value={editForm.price} onChange={e => setEditForm({...editForm, price: Number(e.target.value)})} className="input-glass py-2 px-3 text-sm w-24" />
+                  ) : <span className="price-tag text-sm py-1 px-3">${p.price}</span>}
+                </td>
+                <td className="py-4 px-6">
+                  {editingId === p._id ? (
+                    <input type="number" value={editForm.stock} onChange={e => setEditForm({...editForm, stock: Number(e.target.value)})} className="input-glass py-2 px-3 text-sm w-20" />
+                  ) : <span className="font-medium">{p.stock}</span>}
+                </td>
+                <td className="py-4 px-6">
+                  {editingId === p._id ? (
+                    <div className="flex gap-2">
+                      <button onClick={() => handleSave(p._id)} className="btn btn-success px-3 py-1 text-xs">Save</button>
+                      <button onClick={() => setEditingId(null)} className="btn btn-outline px-3 py-1 text-xs">Cancel</button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <button onClick={() => handleEdit(p)} className="btn btn-primary px-3 py-1 text-xs">Edit</button>
+                      <button onClick={() => handleDelete(p._id)} className="btn btn-danger px-3 py-1 text-xs">Delete</button>
+                    </div>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      <div className="flex justify-center gap-2 mt-4">
-        <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page===1} className="px-3 py-1 border rounded disabled:opacity-50">Prev</button>
-        <span className="px-3 py-1">Page {page} of {Math.ceil(total/10)}</span>
-        <button onClick={() => setPage(p => p+1)} disabled={page*10>=total} className="px-3 py-1 border rounded disabled:opacity-50">Next</button>
+      {/* Pagination */}
+      <div className="flex justify-center gap-3 mt-6">
+        <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page===1} className="btn btn-outline disabled:opacity-50">Previous</button>
+        <div className="flex items-center gap-2 px-6 py-2 glass-card">
+          <span className="font-semibold text-indigo-600">{page}</span>
+          <span className="text-gray-400">of</span>
+          <span className="font-semibold">{Math.ceil(total/10)}</span>
+        </div>
+        <button onClick={() => setPage(p => p+1)} disabled={page*10>=total} className="btn btn-outline disabled:opacity-50">Next</button>
       </div>
     </div>
   );
