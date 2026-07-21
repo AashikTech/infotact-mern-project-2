@@ -48,8 +48,8 @@ const productData: { [category: string]: string[] } = {
 const brands: { [key: string]: string[] } = {
   'Electronics': ['Sony', 'Samsung', 'Apple', 'Dell', 'LG', 'Logitech', 'JBL', 'Canon'],
   'Clothing': ['Nike', 'Adidas', 'Puma', 'Levis', 'Hanes', 'Ray-Ban', 'North Face'],
-  'Home & Kitchen': ['Keurig', 'Ninja', 'Dyson', 'Philips', 'Ikea', 'Hydro Flask'],
-  'Sports & Outdoors': ['Nike', 'Wilson', 'Coleman', 'Manduka', 'Spalding', 'Everlast'],
+  'Home & Kitchen': ['Keurig', 'Ninja', 'Dyson', 'Philips', 'Ikea', 'Hamilton Beach', 'Cuisinart', 'Vitamix'],
+  'Sports & Outdoors': ['Nike', 'Wilson', 'Coleman', 'Manduka', 'Spalding', 'Everlast', 'Under Armour', 'Adidas'],
   'Books': ['OReilly', 'Penguin', 'Harper', 'Bloomsbury'],
   'Toys & Games': ['Lego', 'Hasbro', 'Hot Wheels', 'Ravensburger', 'Crayola'],
 };
