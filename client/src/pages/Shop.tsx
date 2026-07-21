@@ -19,7 +19,7 @@ export default function Shop() {
 
   const fetchProducts = async () => {
     setLoading(true);
-    const cat = selectedCategory !== 'All' ? `&category=${selectedCategory}` : '';
+    const cat = selectedCategory !== 'All' ? `&category=${encodeURIComponent(selectedCategory)}` : '';
     const res = await api.get(`/products?page=${page}&limit=8${cat}`);
     setProducts(res.data.data);
     setTotal(res.data.pagination.total);
