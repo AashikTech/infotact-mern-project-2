@@ -3,86 +3,58 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../lib/api';
 
-const Dashboard = () => {
+export default function Dashboard() {
   const { user, logout } = useAuth();
   const [stats, setStats] = useState({ products: 0, orders: 0 });
   const location = useLocation();
 
-  useEffect(() => {
-    api.get('/products').then(res => setStats(prev => ({ ...prev, products: res.data.pagination.total })));
-  }, []);
+  useEffect(() => { api.get('/products').then(r => setStats(p => ({ ...p, products: r.data.pagination.total }))); }, []);
 
-  const handleLogout = () => {
-    if (window.confirm('Are you sure you want to logout?')) { logout(); }
-  };
-
-  const navItems = [
+  const nav = [
     { path: '/admin', label: 'Products' },
     { path: '/admin/search', label: 'Search' },
     { path: '/admin/users', label: 'Users' },
   ];
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--color-cream)' }}>
-      {/* Navbar */}
-      <nav className="navbar-elegant">
-        <div className="max-w-7xl mx-auto px-8 py-5 flex justify-between items-center">
-          <h1 className="font-display text-2xl font-bold" style={{ color: 'var(--color-black)' }}>
-            Admin
-          </h1>
-          <div className="flex items-center gap-8">
-            <span className="text-sm" style={{ color: 'var(--color-gray)' }}>
-              {user?.name}
-            </span>
-            <button onClick={handleLogout} className="btn-elegant btn-ghost-elegant text-xs">Logout</button>
+    <div className="min-h-screen bg-[#fafaf8]">
+      <nav className="sticky top-0 z-50 bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <h1 className="text-xl font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>Admin</h1>
+          <div className="flex items-center gap-6">
+            <span className="text-sm text-gray-500">{user?.name}</span>
+            <button onClick={() => { if (confirm('Logout?')) logout(); }} className="text-sm text-gray-500 hover:text-gray-900">Logout</button>
           </div>
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-8 py-12">
-        {/* Header */}
-        <div className="mb-12">
-          <h2 className="font-display text-3xl mb-2" style={{ color: 'var(--color-black)' }}>Dashboard</h2>
-          <div className="w-16 h-px" style={{ background: 'var(--color-gold)' }}></div>
-        </div>
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>Dashboard</h2>
+        <div className="w-12 h-px bg-[#c9a96e] mb-8"></div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-          <div className="stat-card-elegant" style={{ animation: 'fadeInUp 0.5s ease' }}>
-            <p className="text-xs font-semibold tracking-wider uppercase mb-3" style={{ color: 'var(--color-silver)' }}>Total Products</p>
-            <p className="font-display text-4xl" style={{ color: 'var(--color-black)' }}>{stats.products}</p>
+        <div className="grid grid-cols-2 gap-6 mb-8">
+          <div className="bg-white border border-gray-200 p-6">
+            <p className="text-xs font-semibold tracking-wider uppercase text-gray-400 mb-2">Total Products</p>
+            <p className="text-3xl font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>{stats.products}</p>
           </div>
-          <div className="stat-card-elegant" style={{ animation: 'fadeInUp 0.5s ease', animationDelay: '0.1s', opacity: 0 }}>
-            <p className="text-xs font-semibold tracking-wider uppercase mb-3" style={{ color: 'var(--color-silver)' }}>Total Orders</p>
-            <p className="font-display text-4xl" style={{ color: 'var(--color-black)' }}>{stats.orders}</p>
+          <div className="bg-white border border-gray-200 p-6">
+            <p className="text-xs font-semibold tracking-wider uppercase text-gray-400 mb-2">Total Orders</p>
+            <p className="text-3xl font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>{stats.orders}</p>
           </div>
         </div>
 
-        {/* Navigation */}
-        <div className="flex gap-4 mb-10">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className="btn-elegant text-xs"
-              style={{
-                background: location.pathname === item.path ? 'var(--color-black)' : 'transparent',
-                color: location.pathname === item.path ? 'var(--color-white)' : 'var(--color-gray)',
-                border: `1px solid ${location.pathname === item.path ? 'var(--color-black)' : 'var(--color-light)'}`,
-              }}
-            >
-              {item.label}
+        <div className="flex gap-3 mb-8">
+          {nav.map(n => (
+            <Link key={n.path} to={n.path} className="btn text-xs" style={{ background: location.pathname === n.path ? '#1a1a1a' : 'transparent', color: location.pathname === n.path ? 'white' : '#666', border: `1px solid ${location.pathname === n.path ? '#1a1a1a' : '#e5e5e5'}` }}>
+              {n.label}
             </Link>
           ))}
         </div>
 
-        {/* Content */}
-        <div className="card-elegant p-8">
+        <div className="bg-white border border-gray-200 p-8">
           <Outlet />
         </div>
       </div>
     </div>
   );
-};
-
-export default Dashboard;
+}

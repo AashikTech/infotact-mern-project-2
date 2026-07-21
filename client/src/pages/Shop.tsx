@@ -2,19 +2,11 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../lib/api';
 
-interface Product {
-  _id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  stock: number;
-  imageUrl: string;
-}
+interface Product { _id: string; name: string; description: string; price: number; category: string; stock: number; imageUrl: string; }
 
 const categories = ['All', 'Electronics', 'Clothing', 'Home & Kitchen', 'Sports & Outdoors', 'Books', 'Toys & Games'];
 
-const Shop = () => {
+export default function Shop() {
   const { user, logout } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
@@ -23,18 +15,15 @@ const Shop = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Product[] | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const fetchProducts = async () => {
-    setIsLoading(true);
-    try {
-      const categoryParam = selectedCategory !== 'All' ? `&category=${selectedCategory}` : '';
-      const res = await api.get(`/products?page=${page}&limit=8${categoryParam}`);
-      setProducts(res.data.data);
-      setTotal(res.data.pagination.total);
-    } finally {
-      setIsLoading(false);
-    }
+    setLoading(true);
+    const cat = selectedCategory !== 'All' ? `&category=${selectedCategory}` : '';
+    const res = await api.get(`/products?page=${page}&limit=8${cat}`);
+    setProducts(res.data.data);
+    setTotal(res.data.pagination.total);
+    setLoading(false);
   };
 
   useEffect(() => { fetchProducts(); }, [page, selectedCategory]);
@@ -42,156 +31,84 @@ const Shop = () => {
 
   const handleSearch = async () => {
     if (!searchQuery) { setSearchResults(null); return; }
-    setIsLoading(true);
-    try {
-      const res = await api.get(`/products/search?q=${encodeURIComponent(searchQuery)}`);
-      setSearchResults(res.data.data);
-    } finally {
-      setIsLoading(false);
-    }
+    setLoading(true);
+    const res = await api.get(`/products/search?q=${encodeURIComponent(searchQuery)}`);
+    setSearchResults(res.data.data);
+    setLoading(false);
   };
 
-  const addToCart = async (productId: string) => {
-    try {
-      await api.post('/cart/add', { productId, quantity: 1 });
-      setCartCount(prev => prev + 1);
-    } catch (err) {
-      alert('Please login to add items');
-    }
+  const addToCart = async (id: string) => {
+    await api.post('/cart/add', { productId: id, quantity: 1 });
+    setCartCount(c => c + 1);
   };
 
-  const handleLogout = () => {
-    if (window.confirm('Are you sure you want to logout?')) { logout(); }
-  };
-
-  const displayProducts = searchResults || products;
+  const display = searchResults || products;
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--color-cream)' }}>
-      {/* Navbar */}
-      <nav className="navbar-elegant">
-        <div className="max-w-7xl mx-auto px-8 py-5 flex justify-between items-center">
-          <h1 className="font-display text-2xl font-bold" style={{ color: 'var(--color-black)' }}>
-            ShopHub
-          </h1>
-          <div className="flex items-center gap-8">
-            <span className="text-sm" style={{ color: 'var(--color-gray)' }}>
-              Welcome, <span className="font-semibold" style={{ color: 'var(--color-black)' }}>{user?.name}</span>
-            </span>
-            <div className="flex items-center gap-2 px-4 py-2" style={{ border: '1px solid var(--color-light)' }}>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--color-gold)' }}>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-              <span className="text-sm font-medium" style={{ color: 'var(--color-black)' }}>{cartCount}</span>
+    <div className="min-h-screen bg-[#fafaf8]">
+      {/* NAV */}
+      <nav className="sticky top-0 z-50 bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <h1 className="text-xl font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>ShopHub</h1>
+          <div className="flex items-center gap-6">
+            <span className="text-sm text-gray-500">Hello, <span className="font-semibold text-gray-900">{user?.name}</span></span>
+            <div className="flex items-center gap-2 px-4 py-2 border border-gray-200">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+              <span className="text-sm font-medium">{cartCount}</span>
             </div>
-            <button onClick={handleLogout} className="btn-elegant btn-ghost-elegant text-xs">Logout</button>
+            <button onClick={() => { if (confirm('Logout?')) logout(); }} className="text-sm text-gray-500 hover:text-gray-900">Logout</button>
           </div>
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-8 py-12">
-        {/* Header */}
-        <div className="mb-12 text-center">
-          <h2 className="font-display text-4xl mb-3" style={{ color: 'var(--color-black)' }}>
-            {searchResults ? 'Search Results' : 'Our Collection'}
-          </h2>
-          <div className="w-24 h-px mx-auto" style={{ background: 'var(--color-gold)' }}></div>
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        {/* TITLE */}
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>Our Collection</h2>
+          <div className="w-16 h-px bg-[#c9a96e] mx-auto mt-3"></div>
         </div>
 
-        {/* Search */}
-        <div className="mb-10 max-w-2xl mx-auto">
+        {/* SEARCH */}
+        <div className="max-w-2xl mx-auto mb-8">
           <div className="flex gap-3">
-            <div className="flex-1 relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                placeholder="Search our collection..."
-                className="input-elegant pl-12"
-              />
-              <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--color-silver)' }}>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <button onClick={handleSearch} className="btn-elegant btn-dark">Search</button>
-            {searchResults && (
-              <button onClick={() => { setSearchResults(null); setSearchQuery(''); }} className="btn-elegant btn-outline-elegant">Clear</button>
-            )}
+            <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="Search..." className="input flex-1" />
+            <button onClick={handleSearch} className="btn btn-dark">Search</button>
+            {searchResults && <button onClick={() => { setSearchResults(null); setSearchQuery(''); }} className="btn btn-outline">Clear</button>}
           </div>
         </div>
 
-        {/* Categories */}
+        {/* CATEGORIES */}
         {!searchResults && (
-          <div className="flex justify-center gap-2 mb-12 flex-wrap">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className="px-6 py-3 text-xs font-semibold tracking-wider uppercase transition-all duration-300"
-                style={{
-                  background: selectedCategory === cat ? 'var(--color-black)' : 'transparent',
-                  color: selectedCategory === cat ? 'var(--color-white)' : 'var(--color-gray)',
-                  border: `1px solid ${selectedCategory === cat ? 'var(--color-black)' : 'var(--color-light)'}`,
-                }}
-              >
-                {cat}
+          <div className="flex justify-center gap-2 mb-10 flex-wrap">
+            {categories.map(c => (
+              <button key={c} onClick={() => setSelectedCategory(c)} className="px-5 py-2 text-xs font-semibold tracking-wider uppercase transition-all" style={{ background: selectedCategory === c ? '#1a1a1a' : 'transparent', color: selectedCategory === c ? 'white' : '#666', border: `1px solid ${selectedCategory === c ? '#1a1a1a' : '#e5e5e5'}` }}>
+                {c}
               </button>
             ))}
           </div>
         )}
 
-        {/* Products */}
-        {isLoading ? (
-          <div className="product-grid">
-            {[1,2,3,4].map(i => (
-              <div key={i} className="shimmer-elegant" style={{ height: '380px', borderRadius: '4px' }}></div>
-            ))}
+        {/* PRODUCTS GRID */}
+        {loading ? (
+          <div className="products-grid">
+            {[1,2,3,4].map(i => <div key={i} className="bg-gray-100 animate-pulse" style={{ height: '360px' }} />)}
           </div>
-        ) : displayProducts.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="font-accent text-2xl italic" style={{ color: 'var(--color-silver)' }}>
-              No products found
-            </p>
-          </div>
+        ) : display.length === 0 ? (
+          <p className="text-center text-gray-400 text-lg py-20" style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic' }}>No products found</p>
         ) : (
-          <div className="product-grid">
-            {displayProducts.map((product, index) => (
-              <div
-                key={product._id}
-                className="product-card-elegant"
-                style={{ animation: `fadeInUp 0.5s ease forwards`, animationDelay: `${index * 0.1}s`, opacity: 0 }}
-              >
-                <div className="relative overflow-hidden product-image-container">
-                  <img
-                    src={product.imageUrl || `https://placehold.co/400x300/f5f3f0/1a1a1a?text=${encodeURIComponent(product.name.substring(0, 8))}`}
-                    alt={product.name}
-                    className="product-image"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = `https://placehold.co/400x300/f5f3f0/1a1a1a?text=${encodeURIComponent(product.name.substring(0, 8))}`;
-                    }}
-                  />
-                  <div className="absolute top-4 left-4">
-                    <span className="category-tag">{product.category}</span>
-                  </div>
+          <div className="products-grid">
+            {display.map(p => (
+              <div key={p._id} className="product-card">
+                <div className="product-img-wrapper">
+                  <img src={p.imageUrl || `https://placehold.co/400x300/f5f3f0/1a1a1a?text=${p.name.substring(0,8)}`} alt={p.name} onError={e => { (e.target as HTMLImageElement).src = `https://placehold.co/400x300/f5f3f0/1a1a1a?text=${p.name.substring(0,8)}`; }} />
                 </div>
-                <div className="p-6 card-content">
-                  <div>
-                    <h3 className="font-display text-lg mb-2" style={{ color: 'var(--color-black)' }}>{product.name}</h3>
-                    <p className="text-sm mb-4 line-clamp-2" style={{ color: 'var(--color-silver)', fontStyle: 'italic' }}>
-                      {product.description}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="price-elegant">${product.price}</span>
-                    <button
-                      onClick={() => addToCart(product._id)}
-                      disabled={product.stock === 0}
-                      className="btn-elegant btn-outline-elegant text-xs px-4 py-2"
-                    >
-                      {product.stock === 0 ? 'Sold Out' : 'Add to Cart'}
-                    </button>
+                <div className="product-info">
+                  <span className="category-tag mb-2 inline-block w-fit">{p.category}</span>
+                  <h3>{p.name}</h3>
+                  <p>{p.description}</p>
+                  <div className="product-bottom">
+                    <span className="text-lg font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>${p.price}</span>
+                    <button onClick={() => addToCart(p._id)} disabled={p.stock === 0} className="btn btn-outline btn-sm">{p.stock === 0 ? 'Sold Out' : 'Add to Cart'}</button>
                   </div>
                 </div>
               </div>
@@ -199,40 +116,15 @@ const Shop = () => {
           </div>
         )}
 
-        {/* Pagination */}
+        {/* PAGINATION */}
         {!searchResults && (
-          <div className="flex justify-center gap-4 mt-16">
-            <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="btn-elegant btn-outline-elegant disabled:opacity-30"
-            >
-              ← Previous
-            </button>
-            <div className="flex items-center gap-3 px-8 py-3" style={{ border: '1px solid var(--color-light)' }}>
-              <span className="font-display text-lg" style={{ color: 'var(--color-gold)' }}>{page}</span>
-              <span style={{ color: 'var(--color-silver)' }}>/</span>
-              <span className="font-display text-lg">{Math.ceil(total / 8)}</span>
-            </div>
-            <button
-              onClick={() => setPage(p => p + 1)}
-              disabled={page * 8 >= total}
-              className="btn-elegant btn-outline-elegant disabled:opacity-30"
-            >
-              Next →
-            </button>
+          <div className="flex justify-center gap-4 mt-12">
+            <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page===1} className="btn btn-outline btn-sm disabled:opacity-30">← Prev</button>
+            <span className="flex items-center text-sm text-gray-500">Page {page} of {Math.ceil(total/8)}</span>
+            <button onClick={() => setPage(p => p+1)} disabled={page*8>=total} className="btn btn-outline btn-sm disabled:opacity-30">Next →</button>
           </div>
         )}
       </div>
-
-      {/* Footer */}
-      <footer className="py-8 text-center" style={{ borderTop: '1px solid var(--color-light)' }}>
-        <p className="text-xs tracking-widest uppercase" style={{ color: 'var(--color-silver)' }}>
-          E-Commerce Engine © 2024
-        </p>
-      </footer>
     </div>
   );
-};
-
-export default Shop;
+}
