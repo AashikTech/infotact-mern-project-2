@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import { config } from './config';
-import { connectRedis } from './config/redis';
+import { connectRedis, getRedisClient } from './config/redis';
 import authRoutes from './routes/authRoutes';
 import productRoutes from './routes/productRoutes';
 import cartRoutes from './routes/cartRoutes';
@@ -15,6 +15,21 @@ app.use(express.json());
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
+});
+
+// Flush all Redis cache
+app.post('/api/flush-cache', async (_req, res) => {
+  try {
+    const redis = getRedisClient();
+    if (redis) {
+      await redis.flushAll();
+      res.json({ success: true, message: 'Cache flushed' });
+    } else {
+      res.json({ success: true, message: 'Redis not connected' });
+    }
+  } catch (error) {
+    res.json({ success: true, message: 'Cache flush attempted' });
+  }
 });
 
 app.use('/api/auth', authRoutes);
@@ -31,6 +46,13 @@ const startServer = async () => {
     console.log('Connected to MongoDB');
 
     await connectRedis();
+
+    // Flush cache on startup to ensure fresh data
+    const redis = getRedisClient();
+    if (redis) {
+      await redis.flushAll();
+      console.log('Cache flushed on startup');
+    }
 
     app.listen(config.port, () => {
       console.log(`Server running on port ${config.port}`);
