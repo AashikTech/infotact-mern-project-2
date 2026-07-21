@@ -2,20 +2,11 @@ import mongoose from 'mongoose';
 import { Product } from '../models/Product';
 import { config } from '../config';
 
-// Use placeholder.com for guaranteed working images with cache busting
-const getImage = (category: string, productName: string, id: number): string => {
-  const colors: { [key: string]: string } = {
-    'Electronics': '2c3e50',
-    'Clothing': '8e44ad',
-    'Home & Kitchen': '27ae60',
-    'Sports & Outdoors': 'd35400',
-    'Books': '2980b9',
-    'Toys & Games': '16a085',
-  };
-  const color = colors[category] || '7f8c8d';
-  // Show product name (first 2 words) with unique timestamp to bust cache
-  const shortName = productName.split(' ').slice(0, 2).join(' ');
-  return `https://placehold.co/400x300/${color}/white?text=${encodeURIComponent(shortName)}&v=${id}`;
+// Product-specific images using picsum with seed for consistency
+const getImage = (productName: string, id: number): string => {
+  // Use product name hash for consistent but unique images
+  const seed = productName.split('').reduce((a, c) => a + c.charCodeAt(0), 0) + id;
+  return `https://picsum.photos/seed/${seed}/400/300`;
 };
 
 const productData: { [category: string]: string[] } = {
@@ -84,7 +75,7 @@ const generateProducts = () => {
         price: Math.round((Math.random() * 300 + 20) * 100) / 100,
         category,
         stock: Math.floor(Math.random() * 50) + 5,
-        imageUrl: getImage(category, productName, id),
+        imageUrl: getImage(productName, id),
         embedding: generateMockEmbedding(`${brand} ${item} ${category}`),
       });
       id++;
