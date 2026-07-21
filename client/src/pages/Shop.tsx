@@ -6,6 +6,15 @@ interface Product { _id: string; name: string; description: string; price: numbe
 
 const categories = ['All', 'Electronics', 'Clothing', 'Home & Kitchen', 'Sports & Outdoors', 'Books', 'Toys & Games'];
 
+const getGridCols = () => {
+  if (typeof window === 'undefined') return 'repeat(4, 1fr)';
+  const w = window.innerWidth;
+  if (w < 480) return 'repeat(1, 1fr)';
+  if (w < 768) return 'repeat(2, 1fr)';
+  if (w < 1024) return 'repeat(3, 1fr)';
+  return 'repeat(4, 1fr)';
+};
+
 export default function Shop() {
   const { user, logout } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
@@ -16,6 +25,13 @@ export default function Shop() {
   const [searchResults, setSearchResults] = useState<Product[] | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [loading, setLoading] = useState(false);
+  const [gridCols, setGridCols] = useState(getGridCols());
+
+  useEffect(() => {
+    const handleResize = () => setGridCols(getGridCols());
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -90,13 +106,13 @@ export default function Shop() {
 
         {/* PRODUCTS GRID */}
         {loading ? (
-          <div className="products-grid">
+          <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: '24px', width: '100%' }}>
             {[1,2,3,4].map(i => <div key={i} className="bg-gray-100 animate-pulse" style={{ height: '360px' }} />)}
           </div>
         ) : display.length === 0 ? (
           <p className="text-center text-gray-400 text-lg py-20" style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic' }}>No products found</p>
         ) : (
-          <div className="products-grid">
+          <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: '24px', width: '100%' }}>
             {display.map(p => (
               <div key={p._id} className="product-card">
                 <div className="product-img-wrapper">
