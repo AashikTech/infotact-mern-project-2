@@ -31,14 +31,14 @@ export default function Products() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">
-          <h2 className="text-xl font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>Products</h2>
-          {cache && <span className="text-xs px-3 py-1 bg-gray-100 text-gray-500">Cache: {cache}</span>}
+          <h2 className="text-xl font-bold">Products</h2>
+          {cache && <span className="text-xs px-3 py-1 bg-gray-100 text-gray-500 rounded">Cache: {cache}</span>}
         </div>
-        <button onClick={() => setShowAdd(!showAdd)} className="btn btn-gold text-xs">+ Add</button>
+        <button onClick={() => setShowAdd(!showAdd)} className="btn btn-gold text-sm">+ Add</button>
       </div>
 
       {showAdd && (
-        <div className="bg-white border border-gray-200 p-6 mb-6">
+        <div className="bg-white border p-6 mb-6 rounded-lg">
           <form onSubmit={add} className="grid grid-cols-2 gap-4">
             <input value={newP.name} onChange={e => setNewP({...newP, name: e.target.value})} placeholder="Name" className="input" required />
             <input type="number" value={newP.price||''} onChange={e => setNewP({...newP, price: +e.target.value})} placeholder="Price" className="input" required />
@@ -54,10 +54,10 @@ export default function Products() {
         </div>
       )}
 
-      <div className="bg-white border border-gray-200 overflow-hidden">
+      <div className="bg-white border rounded-lg overflow-hidden">
         <table>
-          <thead><tr className="bg-[#1a1a1a]">
-            <th className="text-white">Name</th><th className="text-white">Category</th><th className="text-white">Price</th><th className="text-white">Stock</th><th className="text-white">Actions</th>
+          <thead><tr className="bg-gray-100">
+            <th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th>
           </tr></thead>
           <tbody>
             {products.map(p => (
@@ -70,7 +70,7 @@ export default function Products() {
                   {editId===p._id ? (
                     <div className="flex gap-2"><button onClick={()=>save(p._id)} className="btn btn-gold btn-sm">Save</button><button onClick={()=>setEditId(null)} className="btn btn-outline btn-sm">Cancel</button></div>
                   ) : (
-                    <div className="flex gap-2"><button onClick={()=>{setEditId(p._id);setEditForm({name:p.name,price:p.price,stock:p.stock})}} className="btn btn-dark btn-sm">Edit</button><button onClick={()=>del(p._id)} className="btn btn-sm" style={{border:'1px solid #dc2626',color:'#dc2626'}}>Del</button></div>
+                    <div className="flex gap-2"><button onClick={()=>{setEditId(p._id);setEditForm({name:p.name,price:p.price,stock:p.stock})}} className="btn btn-dark btn-sm">Edit</button><button onClick={()=>del(p._id)} className="btn btn-sm text-red-600">Delete</button></div>
                   )}
                 </td>
               </tr>
@@ -80,9 +80,9 @@ export default function Products() {
       </div>
 
       <div className="flex justify-center gap-4 mt-6">
-        <button onClick={()=>setPage(p=>Math.max(1,p-1))} disabled={page===1} className="btn btn-outline btn-sm disabled:opacity-30">← Prev</button>
+        <button onClick={()=>setPage(p=>Math.max(1,p-1))} disabled={page===1} className="btn btn-outline btn-sm disabled:opacity-50">← Prev</button>
         <span className="flex items-center text-sm text-gray-500">Page {page} / {Math.ceil(total/10)}</span>
-        <button onClick={()=>setPage(p=>p+1)} disabled={page*10>=total} className="btn btn-outline btn-sm disabled:opacity-30">Next →</button>
+        <button onClick={()=>setPage(p=>p+1)} disabled={page*10>=total} className="btn btn-outline btn-sm disabled:opacity-50">Next →</button>
       </div>
     </div>
   );
