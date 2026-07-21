@@ -116,7 +116,13 @@ export default function Shop() {
             {display.map(p => (
               <div key={p._id} className="product-card">
                 <div className="product-img-wrapper">
-                  <img src={p.imageUrl || `https://placehold.co/400x300/f5f3f0/1a1a1a?text=${p.name.substring(0,8)}`} alt={p.name} onError={e => { (e.target as HTMLImageElement).src = `https://placehold.co/400x300/f5f3f0/1a1a1a?text=${p.name.substring(0,8)}`; }} />
+                  <img 
+                    src={p.imageUrl || `https://placehold.co/400x300/2c3e50/white?text=${encodeURIComponent(p.name.split(' ').slice(0,2).join(' '))}&v=${p._id}`} 
+                    alt={p.name} 
+                    onError={e => { 
+                      (e.target as HTMLImageElement).src = `https://placehold.co/400x300/7f8c8d/white?text=${encodeURIComponent(p.name.split(' ').slice(0,2).join(' '))}&v=${p._id}`; 
+                    }} 
+                  />
                 </div>
                 <div className="product-info">
                   <span className="category-tag mb-2 inline-block w-fit">{p.category}</span>

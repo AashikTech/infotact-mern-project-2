@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 import { Product } from '../models/Product';
 import { config } from '../config';
 
-// Use placeholder.com for guaranteed working images
-const getImage = (category: string, productName: string): string => {
+// Use placeholder.com for guaranteed working images with cache busting
+const getImage = (category: string, productName: string, id: number): string => {
   const colors: { [key: string]: string } = {
     'Electronics': '2c3e50',
     'Clothing': '8e44ad',
@@ -13,9 +13,9 @@ const getImage = (category: string, productName: string): string => {
     'Toys & Games': '16a085',
   };
   const color = colors[category] || '7f8c8d';
-  // Show product name (first 2 words)
+  // Show product name (first 2 words) with unique timestamp to bust cache
   const shortName = productName.split(' ').slice(0, 2).join(' ');
-  return `https://placehold.co/400x300/${color}/white?text=${encodeURIComponent(shortName)}`;
+  return `https://placehold.co/400x300/${color}/white?text=${encodeURIComponent(shortName)}&v=${id}`;
 };
 
 const productData: { [category: string]: string[] } = {
@@ -84,7 +84,7 @@ const generateProducts = () => {
         price: Math.round((Math.random() * 300 + 20) * 100) / 100,
         category,
         stock: Math.floor(Math.random() * 50) + 5,
-        imageUrl: getImage(category, productName),
+        imageUrl: getImage(category, productName, id),
         embedding: generateMockEmbedding(`${brand} ${item} ${category}`),
       });
       id++;
