@@ -12,15 +12,7 @@ interface Product {
   imageUrl: string;
 }
 
-const categories = [
-  { name: 'All', icon: '🏷️', color: 'from-gray-500 to-gray-600' },
-  { name: 'Electronics', icon: '📱', color: 'from-blue-500 to-blue-600' },
-  { name: 'Clothing', icon: '👕', color: 'from-red-500 to-red-600' },
-  { name: 'Home & Kitchen', icon: '🏠', color: 'from-green-500 to-green-600' },
-  { name: 'Sports & Outdoors', icon: '⚽', color: 'from-orange-500 to-orange-600' },
-  { name: 'Books', icon: '📚', color: 'from-purple-500 to-purple-600' },
-  { name: 'Toys & Games', icon: '🎮', color: 'from-cyan-500 to-cyan-600' },
-];
+const categories = ['All', 'Electronics', 'Clothing', 'Home & Kitchen', 'Sports & Outdoors', 'Books', 'Toys & Games'];
 
 const Shop = () => {
   const { user, logout } = useAuth();
@@ -75,157 +67,128 @@ const Shop = () => {
   const displayProducts = searchResults || products;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50">
+    <div className="min-h-screen" style={{ background: 'var(--color-cream)' }}>
       {/* Navbar */}
-      <nav className="navbar">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+      <nav className="navbar-elegant">
+        <div className="max-w-7xl mx-auto px-8 py-5 flex justify-between items-center">
+          <h1 className="font-display text-2xl font-bold" style={{ color: 'var(--color-black)' }}>
+            ShopHub
+          </h1>
+          <div className="flex items-center gap-8">
+            <span className="text-sm" style={{ color: 'var(--color-gray)' }}>
+              Welcome, <span className="font-semibold" style={{ color: 'var(--color-black)' }}>{user?.name}</span>
+            </span>
+            <div className="flex items-center gap-2 px-4 py-2" style={{ border: '1px solid var(--color-light)' }}>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--color-gold)' }}>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
+              <span className="text-sm font-medium" style={{ color: 'var(--color-black)' }}>{cartCount}</span>
             </div>
-            <h1 className="text-xl font-bold gradient-text">ShopHub</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">Hello, <span className="font-semibold">{user?.name}</span></span>
-            <div className="relative">
-              <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full shadow-lg">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                <span className="font-semibold">{cartCount}</span>
-              </div>
-            </div>
-            <button onClick={handleLogout} className="btn btn-ghost text-sm">Logout</button>
+            <button onClick={handleLogout} className="btn-elegant btn-ghost-elegant text-xs">Logout</button>
           </div>
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Search Bar */}
-        <div className="glass-card p-6 mb-8">
+      <div className="max-w-7xl mx-auto px-8 py-12">
+        {/* Header */}
+        <div className="mb-12 text-center">
+          <h2 className="font-display text-4xl mb-3" style={{ color: 'var(--color-black)' }}>
+            {searchResults ? 'Search Results' : 'Our Collection'}
+          </h2>
+          <div className="w-24 h-px mx-auto" style={{ background: 'var(--color-gold)' }}></div>
+        </div>
+
+        {/* Search */}
+        <div className="mb-10 max-w-2xl mx-auto">
           <div className="flex gap-3">
-            <div className="search-container flex-1">
-              <svg className="search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+            <div className="flex-1 relative">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                placeholder="Search for products..."
-                className="input-glass pl-12"
+                placeholder="Search our collection..."
+                className="input-elegant pl-12"
               />
+              <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--color-silver)' }}>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
             </div>
-            <button onClick={handleSearch} disabled={isLoading} className="btn btn-primary">
-              {isLoading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              ) : (
-                <>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                  Search
-                </>
-              )}
-            </button>
+            <button onClick={handleSearch} className="btn-elegant btn-dark">Search</button>
             {searchResults && (
-              <button onClick={() => { setSearchResults(null); setSearchQuery(''); }} className="btn btn-outline">
-                Clear
-              </button>
+              <button onClick={() => { setSearchResults(null); setSearchQuery(''); }} className="btn-elegant btn-outline-elegant">Clear</button>
             )}
           </div>
         </div>
 
-        {/* Category Filters */}
+        {/* Categories */}
         {!searchResults && (
-          <div className="flex gap-3 overflow-x-auto pb-4 mb-8 scrollbar-hide">
+          <div className="flex justify-center gap-2 mb-12 flex-wrap">
             {categories.map((cat) => (
               <button
-                key={cat.name}
-                onClick={() => setSelectedCategory(cat.name)}
-                className={`flex items-center gap-2 px-5 py-3 rounded-2xl font-medium whitespace-nowrap transition-all duration-300 ${
-                  selectedCategory === cat.name
-                    ? `bg-gradient-to-r ${cat.color} text-white shadow-lg scale-105`
-                    : 'bg-white text-gray-600 hover:bg-gray-50 shadow-md hover:shadow-lg'
-                }`}
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className="px-6 py-3 text-xs font-semibold tracking-wider uppercase transition-all duration-300"
+                style={{
+                  background: selectedCategory === cat ? 'var(--color-black)' : 'transparent',
+                  color: selectedCategory === cat ? 'var(--color-white)' : 'var(--color-gray)',
+                  border: `1px solid ${selectedCategory === cat ? 'var(--color-black)' : 'var(--color-light)'}`,
+                }}
               >
-                <span className="text-lg">{cat.icon}</span>
-                {cat.name}
+                {cat}
               </button>
             ))}
           </div>
         )}
 
-        {/* Products Grid */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold gradient-text">
-            {searchResults ? `Search Results (${searchResults.length})` : selectedCategory}
-          </h2>
-        </div>
-
+        {/* Products */}
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {[1,2,3,4].map(i => (
-              <div key={i} className="glass-card overflow-hidden">
-                <div className="h-48 shimmer"></div>
-                <div className="p-4 space-y-3">
-                  <div className="h-4 shimmer rounded w-3/4"></div>
-                  <div className="h-3 shimmer rounded w-1/2"></div>
-                </div>
-              </div>
+              <div key={i} className="shimmer-elegant" style={{ height: '360px' }}></div>
             ))}
           </div>
         ) : displayProducts.length === 0 ? (
-          <div className="glass-card p-12 text-center">
-            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-              <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">No products found</h3>
-            <p className="text-gray-500">Try adjusting your search or category filter</p>
+          <div className="text-center py-20">
+            <p className="font-accent text-2xl italic" style={{ color: 'var(--color-silver)' }}>
+              No products found
+            </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {displayProducts.map((product, index) => (
-              <div key={product._id} className="product-card card-animate" style={{ animationDelay: `${index * 0.1}s` }}>
-                <div className="relative overflow-hidden h-48">
+              <div
+                key={product._id}
+                className="product-card-elegant"
+                style={{ animation: `fadeInUp 0.5s ease forwards`, animationDelay: `${index * 0.1}s`, opacity: 0 }}
+              >
+                <div className="relative overflow-hidden" style={{ height: '240px' }}>
                   <img
-                    src={product.imageUrl || `https://placehold.co/400x400/95a5a6/white?text=${encodeURIComponent(product.name.substring(0, 10))}`}
+                    src={product.imageUrl || `https://placehold.co/400x400/f5f3f0/1a1a1a?text=${encodeURIComponent(product.name.substring(0, 8))}`}
                     alt={product.name}
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src = `https://placehold.co/400x400/95a5a6/white?text=${encodeURIComponent(product.name.substring(0, 10))}`;
+                      target.src = `https://placehold.co/400x400/f5f3f0/1a1a1a?text=${encodeURIComponent(product.name.substring(0, 8))}`;
                     }}
                   />
-                  <div className="absolute top-3 right-3">
-                    <span className={`category-badge category-${product.category.toLowerCase().replace(/[^a-z]/g, '')}`}>
-                      {product.category}
-                    </span>
+                  <div className="absolute top-4 left-4">
+                    <span className="category-tag">{product.category}</span>
                   </div>
                 </div>
-                <div className="p-5">
-                  <h3 className="font-bold text-gray-800 mb-2 line-clamp-1">{product.name}</h3>
-                  <p className="text-sm text-gray-500 mb-3 line-clamp-2">{product.description}</p>
+                <div className="p-6">
+                  <h3 className="font-display text-lg mb-2" style={{ color: 'var(--color-black)' }}>{product.name}</h3>
+                  <p className="text-sm mb-4 line-clamp-2" style={{ color: 'var(--color-silver)', fontStyle: 'italic' }}>
+                    {product.description}
+                  </p>
                   <div className="flex items-center justify-between">
-                    <span className="price-tag">${product.price}</span>
+                    <span className="price-elegant">${product.price}</span>
                     <button
                       onClick={() => addToCart(product._id)}
                       disabled={product.stock === 0}
-                      className="btn btn-primary px-4 py-2 text-sm"
+                      className="btn-elegant btn-outline-elegant text-xs px-4 py-2"
                     >
-                      {product.stock === 0 ? 'Out of Stock' : (
-                        <>
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                          </svg>
-                          Add
-                        </>
-                      )}
+                      {product.stock === 0 ? 'Sold Out' : 'Add to Cart'}
                     </button>
                   </div>
                 </div>
@@ -236,35 +199,36 @@ const Shop = () => {
 
         {/* Pagination */}
         {!searchResults && (
-          <div className="flex justify-center gap-3 mt-10">
+          <div className="flex justify-center gap-4 mt-16">
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="btn btn-outline disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-elegant btn-outline-elegant disabled:opacity-30"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Previous
+              ← Previous
             </button>
-            <div className="flex items-center gap-2 px-6 py-2 glass-card">
-              <span className="font-semibold text-indigo-600">{page}</span>
-              <span className="text-gray-400">of</span>
-              <span className="font-semibold">{Math.ceil(total / 8)}</span>
+            <div className="flex items-center gap-3 px-8 py-3" style={{ border: '1px solid var(--color-light)' }}>
+              <span className="font-display text-lg" style={{ color: 'var(--color-gold)' }}>{page}</span>
+              <span style={{ color: 'var(--color-silver)' }}>/</span>
+              <span className="font-display text-lg">{Math.ceil(total / 8)}</span>
             </div>
             <button
               onClick={() => setPage(p => p + 1)}
               disabled={page * 8 >= total}
-              className="btn btn-outline disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-elegant btn-outline-elegant disabled:opacity-30"
             >
-              Next
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
+              Next →
             </button>
           </div>
         )}
       </div>
+
+      {/* Footer */}
+      <footer className="py-8 text-center" style={{ borderTop: '1px solid var(--color-light)' }}>
+        <p className="text-xs tracking-widest uppercase" style={{ color: 'var(--color-silver)' }}>
+          E-Commerce Engine © 2024
+        </p>
+      </footer>
     </div>
   );
 };

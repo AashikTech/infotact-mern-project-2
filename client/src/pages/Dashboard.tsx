@@ -17,87 +17,67 @@ const Dashboard = () => {
   };
 
   const navItems = [
-    { path: '/admin', label: 'Products', icon: '📦' },
-    { path: '/admin/search', label: 'Search', icon: '🔍' },
-    { path: '/admin/users', label: 'Users', icon: '👥' },
+    { path: '/admin', label: 'Products' },
+    { path: '/admin/search', label: 'Search' },
+    { path: '/admin/users', label: 'Users' },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50">
+    <div className="min-h-screen" style={{ background: 'var(--color-cream)' }}>
       {/* Navbar */}
-      <nav className="navbar">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <h1 className="text-xl font-bold gradient-text">Admin Dashboard</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 px-4 py-2 glass-card">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
-                {user?.name?.charAt(0)}
-              </div>
-              <span className="text-sm font-medium">{user?.name}</span>
-            </div>
-            <button onClick={handleLogout} className="btn btn-ghost text-sm">Logout</button>
+      <nav className="navbar-elegant">
+        <div className="max-w-7xl mx-auto px-8 py-5 flex justify-between items-center">
+          <h1 className="font-display text-2xl font-bold" style={{ color: 'var(--color-black)' }}>
+            Admin
+          </h1>
+          <div className="flex items-center gap-8">
+            <span className="text-sm" style={{ color: 'var(--color-gray)' }}>
+              {user?.name}
+            </span>
+            <button onClick={handleLogout} className="btn-elegant btn-ghost-elegant text-xs">Logout</button>
           </div>
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="stat-card card-animate">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500 mb-1">Total Products</p>
-                <p className="text-4xl font-bold gradient-text">{stats.products}</p>
-              </div>
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
-                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
-              </div>
-            </div>
+      <div className="max-w-7xl mx-auto px-8 py-12">
+        {/* Header */}
+        <div className="mb-12">
+          <h2 className="font-display text-3xl mb-2" style={{ color: 'var(--color-black)' }}>Dashboard</h2>
+          <div className="w-16 h-px" style={{ background: 'var(--color-gold)' }}></div>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          <div className="stat-card-elegant" style={{ animation: 'fadeInUp 0.5s ease' }}>
+            <p className="text-xs font-semibold tracking-wider uppercase mb-3" style={{ color: 'var(--color-silver)' }}>Total Products</p>
+            <p className="font-display text-4xl" style={{ color: 'var(--color-black)' }}>{stats.products}</p>
           </div>
-          <div className="stat-card card-animate" style={{ animationDelay: '0.1s' }}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500 mb-1">Total Orders</p>
-                <p className="text-4xl font-bold gradient-text">{stats.orders}</p>
-              </div>
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg">
-                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-              </div>
-            </div>
+          <div className="stat-card-elegant" style={{ animation: 'fadeInUp 0.5s ease', animationDelay: '0.1s', opacity: 0 }}>
+            <p className="text-xs font-semibold tracking-wider uppercase mb-3" style={{ color: 'var(--color-silver)' }}>Total Orders</p>
+            <p className="font-display text-4xl" style={{ color: 'var(--color-black)' }}>{stats.orders}</p>
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="flex gap-3 mb-8 overflow-x-auto pb-2">
+        {/* Navigation */}
+        <div className="flex gap-4 mb-10">
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-medium transition-all duration-300 ${
-                location.pathname === item.path
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg scale-105'
-                  : 'bg-white text-gray-600 hover:bg-gray-50 shadow-md hover:shadow-lg'
-              }`}
+              className="btn-elegant text-xs"
+              style={{
+                background: location.pathname === item.path ? 'var(--color-black)' : 'transparent',
+                color: location.pathname === item.path ? 'var(--color-white)' : 'var(--color-gray)',
+                border: `1px solid ${location.pathname === item.path ? 'var(--color-black)' : 'var(--color-light)'}`,
+              }}
             >
-              <span className="text-lg">{item.icon}</span>
               {item.label}
             </Link>
           ))}
         </div>
 
         {/* Content */}
-        <div className="glass-card p-6">
+        <div className="card-elegant p-8">
           <Outlet />
         </div>
       </div>
