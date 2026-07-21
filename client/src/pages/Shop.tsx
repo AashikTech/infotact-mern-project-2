@@ -60,6 +60,12 @@ const Shop = () => {
 
   const displayProducts = searchResults || products;
 
+  const handleLogout = () => {
+    if (window.confirm('Are you sure you want to logout?')) {
+      logout();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -69,7 +75,7 @@ const Shop = () => {
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600">Hello, {user?.name}</span>
             <span className="text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded">Cart: {cartCount}</span>
-            <button onClick={logout} className="text-sm text-red-600 hover:underline">Logout</button>
+            <button onClick={handleLogout} className="text-sm text-red-600 hover:underline">Logout</button>
           </div>
         </div>
       </nav>

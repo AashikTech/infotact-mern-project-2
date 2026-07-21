@@ -11,6 +11,12 @@ const Dashboard = () => {
     api.get('/products').then(res => setStats(prev => ({ ...prev, products: res.data.pagination.total })));
   }, []);
 
+  const handleLogout = () => {
+    if (window.confirm('Are you sure you want to logout?')) {
+      logout();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <nav className="bg-white shadow-sm">
@@ -18,7 +24,7 @@ const Dashboard = () => {
           <h1 className="text-xl font-bold">E-Commerce Admin</h1>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600">{user?.name}</span>
-            <button onClick={logout} className="text-sm text-red-600 hover:underline">Logout</button>
+            <button onClick={handleLogout} className="text-sm text-red-600 hover:underline">Logout</button>
           </div>
         </div>
       </nav>
