@@ -3,7 +3,6 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
-  const [role, setRole] = useState<'customer' | 'admin'>('customer');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -17,16 +16,6 @@ const Login = () => {
     try {
       await login(email, password);
       const user = JSON.parse(localStorage.getItem('user') || '{}');
-
-      // Check if selected role matches actual role
-      if (role === 'admin' && user.role !== 'admin') {
-        setError('This account is not an admin. Please login as Customer.');
-        return;
-      }
-      if (role === 'customer' && user.role === 'admin') {
-        setError('This is an admin account. Please login as Admin.');
-        return;
-      }
 
       // Redirect based on actual role
       if (user.role === 'admin') {
@@ -52,37 +41,6 @@ const Login = () => {
         <div className="text-center mb-6">
           <h2 className="text-xl font-semibold text-gray-700">Welcome Back</h2>
           <p className="text-gray-500 text-sm mt-1">Sign in to continue to your account</p>
-        </div>
-
-        {/* Role Selection */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-600 mb-2">Select Your Role</label>
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={() => setRole('customer')}
-              className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
-                role === 'customer'
-                  ? 'border-blue-600 bg-blue-50 text-blue-600'
-                  : 'border-gray-200 text-gray-500 hover:border-gray-300'
-              }`}
-            >
-              <span className="text-lg">👤</span>
-              <span className="font-medium">Customer</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setRole('admin')}
-              className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
-                role === 'admin'
-                  ? 'border-purple-600 bg-purple-50 text-purple-600'
-                  : 'border-gray-200 text-gray-500 hover:border-gray-300'
-              }`}
-            >
-              <span className="text-lg">🛠️</span>
-              <span className="font-medium">Admin</span>
-            </button>
-          </div>
         </div>
 
         {/* Error */}
@@ -135,11 +93,7 @@ const Login = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className={`w-full py-3 rounded-lg text-white font-semibold transition ${
-              role === 'admin'
-                ? 'bg-purple-600 hover:bg-purple-700'
-                : 'bg-blue-600 hover:bg-blue-700'
-            }`}
+            className="w-full py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
           >
             Sign In
           </button>
