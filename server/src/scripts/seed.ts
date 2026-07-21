@@ -3,17 +3,19 @@ import { Product } from '../models/Product';
 import { config } from '../config';
 
 // Use placeholder.com for guaranteed working images
-const getImage = (category: string, id: number): string => {
+const getImage = (category: string, productName: string): string => {
   const colors: { [key: string]: string } = {
-    'Electronics': '3498db',
-    'Clothing': 'e74c3c',
-    'Home & Kitchen': '2ecc71',
-    'Sports & Outdoors': 'f39c12',
-    'Books': '9b59b6',
-    'Toys & Games': '1abc9c',
+    'Electronics': '2c3e50',
+    'Clothing': '8e44ad',
+    'Home & Kitchen': '27ae60',
+    'Sports & Outdoors': 'd35400',
+    'Books': '2980b9',
+    'Toys & Games': '16a085',
   };
-  const color = colors[category] || '95a5a6';
-  return `https://placehold.co/400x400/${color}/white?text=${encodeURIComponent(category.substring(0, 3))}`;
+  const color = colors[category] || '7f8c8d';
+  // Show product name (first 2 words)
+  const shortName = productName.split(' ').slice(0, 2).join(' ');
+  return `https://placehold.co/400x300/${color}/white?text=${encodeURIComponent(shortName)}`;
 };
 
 const productData: { [category: string]: string[] } = {
@@ -75,13 +77,14 @@ const generateProducts = () => {
     const categoryBrands = brands[category] || [];
     for (const item of items) {
       const brand = categoryBrands[id % categoryBrands.length];
+      const productName = `${brand} ${item}`;
       products.push({
-        name: `${brand} ${item}`,
+        name: productName,
         description: `High quality ${item.toLowerCase()} from ${brand}. Perfect for ${category.toLowerCase()} enthusiasts. Durable and reliable.`,
         price: Math.round((Math.random() * 300 + 20) * 100) / 100,
         category,
         stock: Math.floor(Math.random() * 50) + 5,
-        imageUrl: getImage(category, id),
+        imageUrl: getImage(category, productName),
         embedding: generateMockEmbedding(`${brand} ${item} ${category}`),
       });
       id++;
