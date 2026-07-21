@@ -3,8 +3,6 @@ import { Product } from '../models/Product';
 import { config } from '../config';
 import { resolveProductImage } from '../utils/imageResolver';
 
-type ProductCategory = 'Electronics' | 'Clothing' | 'Home & Kitchen' | 'Sports & Outdoors' | 'Books' | 'Toys & Games';
-
 const productData: { [category: string]: string[] } = {
   'Electronics': ['Wireless Earbuds', 'Bluetooth Speaker', 'Smart Watch', 'Laptop', 'Phone', 'Tablet', 'Camera', 'Headphones', 'Monitor', 'Keyboard', 'Mouse', 'Power Bank'],
   'Clothing': ['Winter Jacket', 'Running Shoes', 'Denim Jeans', 'Cotton T-Shirt', 'Hoodie', 'Sneakers', 'Formal Shirt', 'Track Pants', 'Sweater', 'Cap', 'Backpack', 'Sunglasses'],
@@ -52,7 +50,7 @@ const generateProducts = () => {
         price: Math.round((Math.random() * 300 + 20) * 100) / 100,
         category,
         stock: Math.floor(Math.random() * 50) + 5,
-        imageUrl: resolveProductImage(productName, category as ProductCategory, id),
+        imageUrl: resolveProductImage(productName, category as any, id),
         embedding: generateMockEmbedding(`${brand} ${item} ${category}`),
       });
       id++;
