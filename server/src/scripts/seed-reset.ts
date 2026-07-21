@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { Product } from '../models/Product';
 import { config } from '../config';
 
-// Use placeholder.com for guaranteed working images
+// Import seed data from seed.ts
 const getImage = (category: string, id: number): string => {
   const colors: { [key: string]: string } = {
     'Electronics': '3498db',
@@ -17,30 +17,12 @@ const getImage = (category: string, id: number): string => {
 };
 
 const productData: { [category: string]: string[] } = {
-  'Electronics': [
-    'Wireless Earbuds', 'Bluetooth Speaker', 'Smart Watch', 'Laptop', 'Phone',
-    'Tablet', 'Camera', 'Headphones', 'Monitor', 'Keyboard', 'Mouse', 'Power Bank'
-  ],
-  'Clothing': [
-    'Winter Jacket', 'Running Shoes', 'Denim Jeans', 'Cotton T-Shirt', 'Hoodie',
-    'Sneakers', 'Formal Shirt', 'Track Pants', 'Sweater', 'Cap', 'Backpack', 'Sunglasses'
-  ],
-  'Home & Kitchen': [
-    'Coffee Maker', 'Blender', 'Toaster', 'Air Fryer', 'Vacuum Cleaner',
-    'Table Lamp', 'Desk Fan', 'Water Bottle', 'Knife Set', 'Bed Sheet', 'Pillow', 'Curtains'
-  ],
-  'Sports & Outdoors': [
-    'Yoga Mat', 'Dumbbells', 'Resistance Bands', 'Football', 'Cricket Bat',
-    'Basketball', 'Tennis Racket', 'Cycling Helmet', 'Hiking Boots', 'Camping Tent', 'Jump Rope', 'Boxing Gloves'
-  ],
-  'Books': [
-    'JavaScript Guide', 'Python Cookbook', 'Clean Code', 'Atomic Habits',
-    'Think and Grow Rich', 'Sapiens', 'The Alchemist', 'Harry Potter', 'Cookbook'
-  ],
-  'Toys & Games': [
-    'Building Blocks', 'Puzzle Set', 'Remote Control Car', 'Board Game',
-    'Action Figure', 'Lego Set', 'Card Game', 'Robot Kit', 'Art Set', 'Train Set'
-  ],
+  'Electronics': ['Wireless Earbuds', 'Bluetooth Speaker', 'Smart Watch', 'Laptop', 'Phone', 'Tablet', 'Camera', 'Headphones', 'Monitor', 'Keyboard', 'Mouse', 'Power Bank'],
+  'Clothing': ['Winter Jacket', 'Running Shoes', 'Denim Jeans', 'Cotton T-Shirt', 'Hoodie', 'Sneakers', 'Formal Shirt', 'Track Pants', 'Sweater', 'Cap', 'Backpack', 'Sunglasses'],
+  'Home & Kitchen': ['Coffee Maker', 'Blender', 'Toaster', 'Air Fryer', 'Vacuum Cleaner', 'Table Lamp', 'Desk Fan', 'Water Bottle', 'Knife Set', 'Bed Sheet', 'Pillow', 'Curtains'],
+  'Sports & Outdoors': ['Yoga Mat', 'Dumbbells', 'Resistance Bands', 'Football', 'Cricket Bat', 'Basketball', 'Tennis Racket', 'Cycling Helmet', 'Hiking Boots', 'Camping Tent', 'Jump Rope', 'Boxing Gloves'],
+  'Books': ['JavaScript Guide', 'Python Cookbook', 'Clean Code', 'Atomic Habits', 'Think and Grow Rich', 'Sapiens', 'The Alchemist', 'Harry Potter', 'Cookbook'],
+  'Toys & Games': ['Building Blocks', 'Puzzle Set', 'Remote Control Car', 'Board Game', 'Action Figure', 'Lego Set', 'Card Game', 'Robot Kit', 'Art Set', 'Train Set'],
 };
 
 const brands: { [key: string]: string[] } = {
@@ -70,7 +52,6 @@ const generateMockEmbedding = (text: string): number[] => {
 const generateProducts = () => {
   const products = [];
   let id = 1;
-
   for (const [category, items] of Object.entries(productData)) {
     const categoryBrands = brands[category] || [];
     for (const item of items) {
@@ -87,11 +68,11 @@ const generateProducts = () => {
       id++;
     }
   }
-
   return products;
 };
 
-const seed = async () => {
+// WARNING: This will DELETE all products and re-seed!
+const seedReset = async () => {
   try {
     await mongoose.connect(config.mongoUri, {
       serverSelectionTimeoutMS: 5000,
@@ -99,13 +80,9 @@ const seed = async () => {
     });
     console.log('Connected to MongoDB');
 
-    // Check if products already exist
-    const existingCount = await Product.countDocuments();
-    if (existingCount > 0) {
-      console.log(`Database already has ${existingCount} products. Skipping seed.`);
-      console.log('To re-seed, first run: npm run seed:reset');
-      process.exit(0);
-    }
+    console.log('⚠️  Deleting all existing products...');
+    await Product.deleteMany({});
+    console.log('✅ Cleared existing products');
 
     const products = generateProducts();
     console.log(`Generated ${products.length} products`);
@@ -117,12 +94,6 @@ const seed = async () => {
       console.log(`Inserted batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(products.length / batchSize)}`);
     }
 
-    // Verify category counts
-    for (const category of Object.keys(productData)) {
-      const count = await Product.countDocuments({ category });
-      console.log(`${category}: ${count} products`);
-    }
-
     console.log(`✅ Seeded ${products.length} products`);
     process.exit(0);
   } catch (error) {
@@ -131,4 +102,4 @@ const seed = async () => {
   }
 };
 
-seed();
+seedReset();
