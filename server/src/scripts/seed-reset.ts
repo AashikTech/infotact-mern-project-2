@@ -1,12 +1,9 @@
 import mongoose from 'mongoose';
 import { Product } from '../models/Product';
 import { config } from '../config';
+import { resolveProductImage } from '../utils/imageResolver';
 
-// Product-specific images using picsum with seed for consistency
-const getImage = (productName: string, id: number): string => {
-  const seed = productName.split('').reduce((a, c) => a + c.charCodeAt(0), 0) + id;
-  return `https://picsum.photos/seed/${seed}/400/300`;
-};
+type ProductCategory = 'Electronics' | 'Clothing' | 'Home & Kitchen' | 'Sports & Outdoors' | 'Books' | 'Toys & Games';
 
 const productData: { [category: string]: string[] } = {
   'Electronics': ['Wireless Earbuds', 'Bluetooth Speaker', 'Smart Watch', 'Laptop', 'Phone', 'Tablet', 'Camera', 'Headphones', 'Monitor', 'Keyboard', 'Mouse', 'Power Bank'],
@@ -55,7 +52,7 @@ const generateProducts = () => {
         price: Math.round((Math.random() * 300 + 20) * 100) / 100,
         category,
         stock: Math.floor(Math.random() * 50) + 5,
-        imageUrl: getImage(productName, id),
+        imageUrl: resolveProductImage(productName, category as ProductCategory, id),
         embedding: generateMockEmbedding(`${brand} ${item} ${category}`),
       });
       id++;
