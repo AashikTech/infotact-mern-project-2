@@ -24,84 +24,53 @@ export default function Products() {
   useEffect(() => { fetch(); }, [page]);
 
   const save = async (id: string) => { await api.put(`/products/${id}`, editForm); setEditId(null); fetch(); };
-  const add = async (e: React.FormEvent) => { e.preventDefault(); await api.post('/products', newP); setShowAdd(false); setNewP({ name: '', description: '', price: 0, category: 'Electronics', stock: 0, imageUrl: '' }); fetch(); };
-  const del = async (id: string) => { if (confirm('Delete this product?')) { await api.delete(`/products/${id}`); fetch(); } };
+  const add = async (e: React.FormEvent) => { e.preventDefault(); await api.post('/products', newP); setShowAdd(false); fetch(); };
+  const del = async (id: string) => { if (confirm('Delete?')) { await api.delete(`/products/${id}`); fetch(); } };
 
   return (
     <div>
-      {/* HEADER */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Products</h2>
-          {cache && <span className={`badge ${cache === 'HIT' ? 'badge-success' : 'badge-warning'}`}>Cache: {cache}</span>}
+          <h2 className="text-xl font-bold">Products</h2>
+          {cache && <span className="text-xs px-3 py-1 bg-gray-100 text-gray-500 rounded">Cache: {cache}</span>}
         </div>
-        <button onClick={() => setShowAdd(!showAdd)} className="btn btn-accent btn-sm">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
-          Add Product
-        </button>
+        <button onClick={() => setShowAdd(!showAdd)} className="btn btn-gold text-sm">+ Add</button>
       </div>
 
-      {/* ADD FORM */}
       {showAdd && (
-        <div className="card p-5 mb-6 animate-fade-in">
-          <h3 className="font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>New Product</h3>
-          <form onSubmit={add} className="grid grid-cols-2 gap-3">
+        <div className="bg-white border p-6 mb-6 rounded-lg">
+          <form onSubmit={add} className="grid grid-cols-2 gap-4">
             <input value={newP.name} onChange={e => setNewP({...newP, name: e.target.value})} placeholder="Name" className="input" required />
             <input type="number" value={newP.price||''} onChange={e => setNewP({...newP, price: +e.target.value})} placeholder="Price" className="input" required />
             <input type="number" value={newP.stock||''} onChange={e => setNewP({...newP, stock: +e.target.value})} placeholder="Stock" className="input" required />
             <select value={newP.category} onChange={e => setNewP({...newP, category: e.target.value})} className="input">{cats.map(c=><option key={c}>{c}</option>)}</select>
             <input value={newP.imageUrl} onChange={e => setNewP({...newP, imageUrl: e.target.value})} placeholder="Image URL" className="input col-span-2" />
             <textarea value={newP.description} onChange={e => setNewP({...newP, description: e.target.value})} placeholder="Description" className="input col-span-2" rows={2} required />
-            <div className="col-span-2 flex gap-2">
-              <button type="submit" className="btn btn-accent">Add Product</button>
+            <div className="col-span-2 flex gap-3">
+              <button type="submit" className="btn btn-gold">Add</button>
               <button type="button" onClick={() => setShowAdd(false)} className="btn btn-outline">Cancel</button>
             </div>
           </form>
         </div>
       )}
 
-      {/* TABLE */}
-      <div className="table-container">
+      <div className="bg-white border rounded-lg overflow-hidden">
         <table>
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Category</th>
-              <th>Price</th>
-              <th>Stock</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+          <thead><tr className="bg-gray-100">
+            <th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th>
+          </tr></thead>
           <tbody>
             {products.map(p => (
               <tr key={p._id}>
-                <td>
-                  {editId === p._id ? (
-                    <input value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} className="input text-sm py-1" />
-                  ) : <span className="font-medium">{p.name}</span>}
-                </td>
+                <td>{editId===p._id ? <input value={editForm.name} onChange={e=>setEditForm({...editForm,name:e.target.value})} className="input py-1 px-2 text-sm" /> : p.name}</td>
                 <td><span className="category-tag">{p.category}</span></td>
+                <td>{editId===p._id ? <input type="number" value={editForm.price} onChange={e=>setEditForm({...editForm,price:+e.target.value})} className="input py-1 px-2 text-sm w-20" /> : `$${p.price}`}</td>
+                <td>{editId===p._id ? <input type="number" value={editForm.stock} onChange={e=>setEditForm({...editForm,stock:+e.target.value})} className="input py-1 px-2 text-sm w-16" /> : p.stock}</td>
                 <td>
-                  {editId === p._id ? (
-                    <input type="number" value={editForm.price} onChange={e => setEditForm({...editForm, price: +e.target.value})} className="input text-sm py-1 w-24" />
-                  ) : <span className="font-medium">${p.price.toFixed(2)}</span>}
-                </td>
-                <td>
-                  {editId === p._id ? (
-                    <input type="number" value={editForm.stock} onChange={e => setEditForm({...editForm, stock: +e.target.value})} className="input text-sm py-1 w-20" />
-                  ) : <span className={p.stock === 0 ? 'badge badge-danger' : ''}>{p.stock}</span>}
-                </td>
-                <td>
-                  {editId === p._id ? (
-                    <div className="flex gap-2">
-                      <button onClick={() => save(p._id)} className="btn btn-accent btn-sm">Save</button>
-                      <button onClick={() => setEditId(null)} className="btn btn-ghost btn-sm">Cancel</button>
-                    </div>
+                  {editId===p._id ? (
+                    <div className="flex gap-2"><button onClick={()=>save(p._id)} className="btn btn-gold btn-sm">Save</button><button onClick={()=>setEditId(null)} className="btn btn-outline btn-sm">Cancel</button></div>
                   ) : (
-                    <div className="flex gap-2">
-                      <button onClick={() => { setEditId(p._id); setEditForm({name:p.name,price:p.price,stock:p.stock}); }} className="btn btn-outline btn-sm">Edit</button>
-                      <button onClick={() => del(p._id)} className="btn btn-danger btn-sm">Delete</button>
-                    </div>
+                    <div className="flex gap-2"><button onClick={()=>{setEditId(p._id);setEditForm({name:p.name,price:p.price,stock:p.stock})}} className="btn btn-dark btn-sm">Edit</button><button onClick={()=>del(p._id)} className="btn btn-sm text-red-600">Delete</button></div>
                   )}
                 </td>
               </tr>
@@ -110,13 +79,10 @@ export default function Products() {
         </table>
       </div>
 
-      {/* PAGINATION */}
-      <div className="flex items-center justify-between mt-4 pt-4" style={{ borderTop: '1px solid var(--border)' }}>
-        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Page {page} of {Math.ceil(total/10)}</p>
-        <div className="flex gap-2">
-          <button onClick={() => setPage(p => Math.max(1,p-1))} disabled={page===1} className="btn btn-outline btn-sm disabled:opacity-40">← Prev</button>
-          <button onClick={() => setPage(p => p+1)} disabled={page*10>=total} className="btn btn-outline btn-sm disabled:opacity-40">Next →</button>
-        </div>
+      <div className="flex justify-center gap-4 mt-6">
+        <button onClick={()=>setPage(p=>Math.max(1,p-1))} disabled={page===1} className="btn btn-outline btn-sm disabled:opacity-50">← Prev</button>
+        <span className="flex items-center text-sm text-gray-500">Page {page} / {Math.ceil(total/10)}</span>
+        <button onClick={()=>setPage(p=>p+1)} disabled={page*10>=total} className="btn btn-outline btn-sm disabled:opacity-50">Next →</button>
       </div>
     </div>
   );
