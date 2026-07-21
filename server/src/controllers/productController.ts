@@ -14,7 +14,10 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
     const skip = (page - 1) * limit;
     const category = req.query.category as string;
 
-    const cacheKey = `products:all:page:${page}:limit:${limit}:cat:${category || 'all'}`;
+    // Normalize category for cache key (handle URL encoding)
+    const normalizedCategory = category ? decodeURIComponent(category).trim() : '';
+
+    const cacheKey = `products:page:${page}:limit:${limit}:cat:${normalizedCategory || 'all'}`;
     const cachedData = await cacheGet(cacheKey);
 
     if (cachedData) {
@@ -24,8 +27,8 @@ export const getProducts = async (req: Request, res: Response, next: NextFunctio
     }
 
     const query: any = {};
-    if (category) {
-      query.category = category;
+    if (normalizedCategory) {
+      query.category = normalizedCategory;
     }
 
     const products = await Product.find(query).select('-embedding').skip(skip).limit(limit);
