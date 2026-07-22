@@ -24,40 +24,42 @@ export default function Search() {
 
   return (
     <div>
-      <h2 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Search & Edit</h2>
-      <div className="flex gap-3 mb-6">
-        <div className="relative flex-1">
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-          <input value={query} onChange={e => setQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="Search products..." className="input pl-10" />
+      <h2 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '16px' }}>Search & Edit</h2>
+      
+      <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
+        <div style={{ position: 'relative', flex: 1 }}>
+          <svg style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', width: '16px', height: '16px', color: 'var(--text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          <input value={query} onChange={e => setQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="Search products..." className="input" style={{ paddingLeft: '40px' }} />
         </div>
         <button onClick={handleSearch} disabled={loading} className="btn btn-primary">{loading ? 'Searching...' : 'Search'}</button>
       </div>
+
       {results.length > 0 && (
-        <div className="space-y-3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {results.map(r => (
-            <div key={r._id} className="card p-4">
+            <div key={r._id} className="card" style={{ padding: '16px' }}>
               {editId === r._id ? (
-                <div className="space-y-3">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <input value={editForm.name} onChange={e => setEditForm({...editForm, name: e.target.value})} className="input" />
-                  <div className="grid grid-cols-3 gap-3">
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
                     <input type="number" value={editForm.price} onChange={e => setEditForm({...editForm, price: +e.target.value})} className="input" placeholder="Price" />
                     <input type="number" value={editForm.stock} onChange={e => setEditForm({...editForm, stock: +e.target.value})} className="input" placeholder="Stock" />
                     <input value={editForm.category} onChange={e => setEditForm({...editForm, category: e.target.value})} className="input" placeholder="Category" />
                   </div>
-                  <div className="flex gap-2">
+                  <div style={{ display: 'flex', gap: '8px' }}>
                     <button onClick={() => handleSave(r._id)} className="btn btn-primary btn-sm">Save</button>
                     <button onClick={() => setEditId(null)} className="btn btn-secondary btn-sm">Cancel</button>
                   </div>
                 </div>
               ) : (
-                <div className="flex items-start justify-between">
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                   <div>
-                    <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{r.name}</h3>
-                    <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>{r.description}</p>
-                    <div className="flex items-center gap-4 mt-2">
-                      <span className="font-semibold">${r.price.toFixed(2)}</span>
+                    <h3 style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text-primary)', margin: 0 }}>{r.name}</h3>
+                    <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px' }}>{r.description}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '8px' }}>
+                      <span style={{ fontWeight: '600' }}>${r.price.toFixed(2)}</span>
                       <span className="category-tag">{r.category}</span>
-                      <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Stock: {r.stock}</span>
+                      <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Stock: {r.stock}</span>
                     </div>
                   </div>
                   <button onClick={() => { setEditId(r._id); setEditForm({name:r.name,price:r.price,stock:r.stock,category:r.category}); }} className="btn btn-outline btn-sm">Edit</button>
@@ -67,7 +69,12 @@ export default function Search() {
           ))}
         </div>
       )}
-      {results.length === 0 && query && !loading && <div className="text-center py-12"><p style={{ color: 'var(--text-secondary)' }}>No products found for "{query}"</p></div>}
+
+      {results.length === 0 && query && !loading && (
+        <div style={{ textAlign: 'center', padding: '48px 0' }}>
+          <p style={{ color: 'var(--text-secondary)' }}>No products found for "{query}"</p>
+        </div>
+      )}
     </div>
   );
 }
