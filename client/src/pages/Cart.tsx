@@ -11,6 +11,8 @@ interface CartItem {
     imageUrl: string;
   };
   quantity: number;
+  price?: number;
+  name?: string;
 }
 
 export default function Cart() {
@@ -21,9 +23,10 @@ export default function Cart() {
   const fetchCart = async () => {
     try {
       const res = await api.get('/cart');
+      console.log('Cart data:', res.data);
       setCart(res.data.data);
     } catch (err) {
-      console.error('Failed to fetch cart');
+      console.error('Failed to fetch cart:', err);
     } finally {
       setLoading(false);
     }
@@ -33,20 +36,44 @@ export default function Cart() {
 
   const updateQuantity = async (productId: string, quantity: number) => {
     if (quantity < 1) return;
-    await api.put('/cart/update', { productId, quantity });
-    fetchCart();
+    try {
+      await api.put('/cart/update', { productId, quantity });
+      fetchCart();
+    } catch (err) {
+      console.error('Failed to update quantity:', err);
+    }
   };
 
   const removeItem = async (productId: string) => {
-    await api.delete(`/cart/remove/${productId}`);
-    fetchCart();
+    try {
+      await api.delete(`/cart/remove/${productId}`);
+      fetchCart();
+    } catch (err) {
+      console.error('Failed to remove item:', err);
+    }
   };
 
   const clearCart = async () => {
     if (confirm('Clear your cart?')) {
-      await api.delete('/cart/clear');
-      fetchCart();
+      try {
+        await api.delete('/cart/clear');
+        fetchCart();
+      } catch (err) {
+        console.error('Failed to clear cart:', err);
+      }
     }
+  };
+
+  const getItemPrice = (item: any) => {
+    return item.price || item.productId?.price || 0;
+  };
+
+  const getItemName = (item: any) => {
+    return item.name || item.productId?.name || 'Unknown Product';
+  };
+
+  const getItemImage = (item: any) => {
+    return item.productId?.imageUrl || `https://placehold.co/100x100/f1f5f9/64748b?text=Product`;
   };
 
   return (
@@ -78,7 +105,7 @@ export default function Cart() {
           <div style={{ textAlign: 'center', padding: '60px 0' }}>
             <p style={{ color: 'var(--text-secondary)' }}>Loading cart...</p>
           </div>
-        ) : !cart || cart.items?.length === 0 ? (
+        ) : !cart || !cart.items || cart.items.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 0' }}>
             <svg style={{ width: '64px', height: '64px', margin: '0 auto 16px', color: 'var(--text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
             <p style={{ fontSize: '18px', fontWeight: '500', color: 'var(--text-secondary)' }}>Your cart is empty</p>
@@ -95,39 +122,47 @@ export default function Cart() {
               </div>
               
               <div className="card" style={{ overflow: 'hidden' }}>
-                {cart.items.map((item: CartItem) => (
-                  <div key={item._id} style={{ display: 'flex', gap: '16px', padding: '16px', borderBottom: '1px solid var(--border)' }}>
-                    <img 
-                      src={item.productId?.imageUrl || `https://placehold.co/100x100/f1f5f9/64748b?text=Product`} 
-                      alt={item.productId?.name || 'Product'}
-                      style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px' }}
-                    />
-                    <div style={{ flex: 1 }}>
-                      <h3 style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-primary)', margin: 0 }}>{item.productId?.name}</h3>
-                      <p style={{ fontSize: '14px', color: 'var(--text-secondary)', margin: '4px 0' }}>${item.productId?.price?.toFixed(2)}</p>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
-                        <button 
-                          onClick={() => updateQuantity(item.productId?._id, item.quantity - 1)}
-                          style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid var(--border)', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                        >-</button>
-                        <span style={{ minWidth: '24px', textAlign: 'center', fontWeight: '500' }}>{item.quantity}</span>
-                        <button 
-                          onClick={() => updateQuantity(item.productId?._id, item.quantity + 1)}
-                          style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid var(--border)', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                        >+</button>
-                        <button 
-                          onClick={() => removeItem(item.productId?._id)}
-                          style={{ marginLeft: 'auto', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px' }}
-                        >Remove</button>
+                {cart.items.map((item: CartItem, index: number) => {
+                  const price = getItemPrice(item);
+                  const name = getItemName(item);
+                  const image = getItemImage(item);
+                  const subtotal = price * item.quantity;
+                  
+                  return (
+                    <div key={item._id || index} style={{ display: 'flex', gap: '16px', padding: '16px', borderBottom: index < cart.items.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                      <img 
+                        src={image}
+                        alt={name}
+                        style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px', background: '#f1f5f9' }}
+                      />
+                      <div style={{ flex: 1 }}>
+                        <h3 style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-primary)', margin: 0 }}>{name}</h3>
+                        <p style={{ fontSize: '14px', color: 'var(--text-secondary)', margin: '4px 0' }}>${price.toFixed(2)}</p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
+                          <button 
+                            onClick={() => updateQuantity(item.productId?._id || item.productId as any, item.quantity - 1)}
+                            disabled={item.quantity <= 1}
+                            style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid var(--border)', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: item.quantity <= 1 ? 0.5 : 1 }}
+                          >-</button>
+                          <span style={{ minWidth: '24px', textAlign: 'center', fontWeight: '500' }}>{item.quantity}</span>
+                          <button 
+                            onClick={() => updateQuantity(item.productId?._id || item.productId as any, item.quantity + 1)}
+                            style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid var(--border)', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          >+</button>
+                          <button 
+                            onClick={() => removeItem(item.productId?._id || item.productId as any)}
+                            style={{ marginLeft: 'auto', color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px' }}
+                          >Remove</button>
+                        </div>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <p style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)' }}>
+                          ${subtotal.toFixed(2)}
+                        </p>
                       </div>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <p style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)' }}>
-                        ${((item.productId?.price || 0) * item.quantity).toFixed(2)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -138,7 +173,7 @@ export default function Cart() {
                 
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                   <span style={{ color: 'var(--text-secondary)' }}>Subtotal ({cart.items.length} items)</span>
-                  <span style={{ fontWeight: '500' }}>${cart.totalAmount?.toFixed(2) || '0.00'}</span>
+                  <span style={{ fontWeight: '500' }}>${cart.total?.toFixed(2) || cart.totalAmount?.toFixed(2) || '0.00'}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                   <span style={{ color: 'var(--text-secondary)' }}>Shipping</span>
@@ -147,7 +182,7 @@ export default function Cart() {
                 
                 <div style={{ borderTop: '1px solid var(--border)', marginTop: '16px', paddingTop: '16px', display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: '16px', fontWeight: '600' }}>Total</span>
-                  <span style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text-primary)' }}>${cart.totalAmount?.toFixed(2) || '0.00'}</span>
+                  <span style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text-primary)' }}>${cart.total?.toFixed(2) || cart.totalAmount?.toFixed(2) || '0.00'}</span>
                 </div>
                 
                 <button className="btn btn-primary" style={{ width: '100%', marginTop: '16px', padding: '14px' }}>
