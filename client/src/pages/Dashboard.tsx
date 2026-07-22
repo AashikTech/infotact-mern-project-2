@@ -62,11 +62,11 @@ export default function Dashboard() {
             <p style={{ fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)' }}>{stats.orders}</p>
           </div>
           <div style={{ background: 'var(--surface)', borderRadius: '16px', padding: '20px', border: 'none', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '12px', fontWeight: '500', color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Customers</p>
+            <p style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Customers</p>
             <p style={{ fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)' }}>{customers.length}</p>
           </div>
           <div style={{ background: 'var(--surface)', borderRadius: '16px', padding: '20px', border: 'none', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-            <p style={{ fontSize: '12px', fontWeight: '500', color: '#8b5cf6', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Admins</p>
+            <p style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Admins</p>
             <p style={{ fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)' }}>{admins.length}</p>
           </div>
         </div>
