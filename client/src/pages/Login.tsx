@@ -80,7 +80,7 @@ export default function Login() {
     e.preventDefault();
     if (!validate()) return;
     
-    setError('');
+    setErrors({});
     setLoading(true);
     try {
       await login(email, password);
@@ -92,8 +92,6 @@ export default function Login() {
       setLoading(false);
     }
   };
-
-  const setError = (msg: string) => setErrors({ general: msg });
 
   return (
     <div className="min-h-screen flex">
