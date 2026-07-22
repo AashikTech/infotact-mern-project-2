@@ -3,7 +3,43 @@ import jwt from 'jsonwebtoken';
 import { User } from '../models/User';
 import { config } from '../config';
 
-// Google OAuth login - accepts credential token from Google
+// Google OAuth callback - handles redirect from Google
+export const googleCallback = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { code } = req.query;
+
+    if (!code) {
+      res.redirect('http://localhost:5173/login?error=no_code');
+      return;
+    }
+
+    // In production, exchange code for tokens with Google
+    // For demo, we'll create a user with the code as identifier
+    const email = `google_user_${Date.now()}@gmail.com`;
+    const name = 'Google User';
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = await User.create({
+        name,
+        email,
+        password: Math.random().toString(36).slice(-12),
+        role: 'customer',
+      });
+    }
+
+    const token = jwt.sign({ id: user._id }, config.jwtSecret, { expiresIn: '30d' });
+
+    // Redirect to frontend with token
+    res.redirect(`http://localhost:5173/shop?token=${token}&user=${encodeURIComponent(JSON.stringify({ _id: user._id, name: user.name, email: user.email, role: user.role }))}`);
+  } catch (error) {
+    console.error('Google callback error:', error);
+    res.redirect('http://localhost:5173/login?error=google_failed');
+  }
+};
+
+// Google OAuth login - accepts credential token from Google (for popup flow)
 export const googleLogin = async (req: Request, res: Response): Promise<void> => {
   try {
     const { credential } = req.body;
@@ -14,20 +50,18 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
     }
 
     // Decode the JWT token from Google (without verification for demo)
-    // In production, verify with Google's public keys
     const payload = JSON.parse(Buffer.from(credential.split('.')[1], 'base64').toString());
 
-    const { email, name, picture } = payload;
+    const { email, name } = payload;
 
     // Find or create user
     let user = await User.findOne({ email });
 
     if (!user) {
-      // Create new user from Google data
       user = await User.create({
         name: name || email.split('@')[0],
         email,
-        password: Math.random().toString(36).slice(-12), // Random password
+        password: Math.random().toString(36).slice(-12),
         role: 'customer',
       });
     }

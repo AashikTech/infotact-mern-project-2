@@ -65,6 +65,21 @@ export default function Login() {
   useEffect(() => {
     setMounted(true);
     emailRef.current?.focus();
+
+    // Handle Google OAuth callback
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    const userData = params.get('user');
+    const error = params.get('error');
+
+    if (token && userData) {
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', userData);
+      const user = JSON.parse(userData);
+      navigate(user.role === 'admin' ? '/admin' : '/shop');
+    } else if (error) {
+      setErrors({ general: 'Google login failed. Please try again.' });
+    }
   }, []);
 
   const validate = () => {
@@ -77,37 +92,12 @@ export default function Login() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      // @ts-ignore
-      const google = window.google;
-      if (!google) {
-        alert('Google SDK not loaded. Please refresh the page.');
-        return;
-      }
-
-      google.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || '314051158215-bv1mkgs74a1squb1ov4a5ck49obo7umt.apps.googleusercontent.com',
-        callback: async (response: any) => {
-          try {
-            setLoading(true);
-            const res = await api.post('/auth/google', { credential: response.credential });
-            localStorage.setItem('token', res.data.data.token);
-            localStorage.setItem('user', JSON.stringify(res.data.data.user));
-            const user = res.data.data.user;
-            navigate(user.role === 'admin' ? '/admin' : '/shop');
-          } catch (err: any) {
-            setErrors({ general: err.response?.data?.message || 'Google login failed' });
-          } finally {
-            setLoading(false);
-          }
-        },
-      });
-
-      google.accounts.id.prompt();
-    } catch (err) {
-      setErrors({ general: 'Google login initialization failed' });
-    }
+  const handleGoogleLogin = () => {
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '314051158215-bv1mkgs74a1squb1ov4a5ck49obo7umt.apps.googleusercontent.com';
+    const redirectUri = encodeURIComponent('http://localhost:5000/api/auth/google/callback');
+    const scope = 'email profile';
+    const url = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&access_type=offline`;
+    window.location.href = url;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
