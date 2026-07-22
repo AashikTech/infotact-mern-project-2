@@ -46,41 +46,42 @@ export default function Shop() {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--background)' }}>
-      {/* NAVBAR */}
-      <nav className="navbar">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' }}>
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+      {/* NAVBAR - Full Width */}
+      <nav className="navbar" style={{ width: '100%' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' }}>
+              <svg style={{ width: '20px', height: '20px', color: 'white' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
             </div>
-            <span className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>ShopHub</span>
+            <span style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text-primary)' }}>ShopHub</span>
           </div>
-          <div className="flex items-center gap-5">
-            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Hi, <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{user?.name}</span></span>
-            <div className="relative">
-              <button className="p-2 rounded-xl hover:bg-gray-100 transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Hi, <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{user?.name}</span></span>
+            <div style={{ position: 'relative' }}>
+              <button style={{ padding: '8px', borderRadius: '12px', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
               </button>
-              {cartCount > 0 && <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full text-xs flex items-center justify-center text-white" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' }}>{cartCount}</span>}
+              {cartCount > 0 && <span style={{ position: 'absolute', top: '-4px', right: '-4px', width: '20px', height: '20px', borderRadius: '50%', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' }}>{cartCount}</span>}
             </div>
             <button onClick={() => { if (confirm('Logout?')) logout(); }} className="btn btn-secondary btn-sm">Logout</button>
           </div>
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      {/* CONTENT - Centered */}
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }}>
         {/* HEADER */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>All Products</h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>Browse our collection</p>
+        <div style={{ marginBottom: '32px' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>All Products</h1>
+          <p style={{ fontSize: '14px', marginTop: '4px', color: 'var(--text-secondary)' }}>Browse our collection</p>
         </div>
 
         {/* SEARCH */}
-        <div className="mb-6">
-          <div className="flex gap-3 max-w-xl">
-            <div className="relative flex-1">
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-              <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="Search products..." className="input pl-10" />
+        <div style={{ marginBottom: '24px' }}>
+          <div style={{ display: 'flex', gap: '12px', maxWidth: '576px' }}>
+            <div style={{ position: 'relative', flex: 1 }}>
+              <svg style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', width: '16px', height: '16px', color: 'var(--text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="Search products..." className="input" style={{ paddingLeft: '40px' }} />
             </div>
             <button onClick={handleSearch} className="btn btn-primary">Search</button>
             {searchResults && <button onClick={() => { setSearchResults(null); setSearchQuery(''); }} className="btn btn-outline">Clear</button>}
@@ -89,9 +90,9 @@ export default function Shop() {
 
         {/* CATEGORIES */}
         {!searchResults && (
-          <div className="flex gap-2 mb-8 flex-wrap">
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '32px', flexWrap: 'wrap' }}>
             {categories.map(c => (
-              <button key={c} onClick={() => setSelectedCategory(c)} className="px-4 py-2 text-sm font-medium rounded-full transition-all" style={{ background: selectedCategory === c ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' : 'var(--surface)', color: selectedCategory === c ? 'white' : 'var(--text-secondary)', border: `1px solid ${selectedCategory === c ? 'transparent' : 'var(--border)'}` }}>
+              <button key={c} onClick={() => setSelectedCategory(c)} style={{ padding: '8px 16px', fontSize: '14px', fontWeight: '500', borderRadius: '9999px', transition: 'all 0.2s', background: selectedCategory === c ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' : 'var(--surface)', color: selectedCategory === c ? 'white' : 'var(--text-secondary)', border: `1px solid ${selectedCategory === c ? 'transparent' : 'var(--border)'}`, cursor: 'pointer' }}>
                 {c}
               </button>
             ))}
@@ -104,10 +105,10 @@ export default function Shop() {
             {[1,2,3,4].map(i => <div key={i} className="product-card"><div className="img-wrapper" style={{ background: '#e2e8f0' }} /><div className="info"><div className="h-4 rounded mb-2" style={{ background: '#e2e8f0', width: '60%' }} /><div className="h-3 rounded" style={{ background: '#e2e8f0', width: '80%' }} /></div></div>)}
           </div>
         ) : display.length === 0 ? (
-          <div className="text-center py-20">
-            <svg className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
-            <p className="text-lg font-medium" style={{ color: 'var(--text-secondary)' }}>No products found</p>
-            <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>Try a different search or category</p>
+          <div style={{ textAlign: 'center', padding: '80px 0' }}>
+            <svg style={{ width: '64px', height: '64px', margin: '0 auto 16px', color: 'var(--text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+            <p style={{ fontSize: '18px', fontWeight: '500', color: 'var(--text-secondary)' }}>No products found</p>
+            <p style={{ fontSize: '14px', marginTop: '4px', color: 'var(--text-muted)' }}>Try a different search or category</p>
           </div>
         ) : (
           <div className="product-grid">
@@ -115,10 +116,10 @@ export default function Shop() {
               <div key={p._id} className="product-card">
                 <div className="img-wrapper">
                   <img src={p.imageUrl || `https://placehold.co/400x300/f1f5f9/64748b?text=${encodeURIComponent(p.name.split(' ').slice(0,2).join(' '))}`} alt={p.name} onError={e => { (e.target as HTMLImageElement).src = `https://placehold.co/400x300/f1f5f9/64748b?text=${encodeURIComponent(p.name.split(' ').slice(0,2).join(' '))}`; }} />
-                  {p.stock === 0 && <div className="absolute inset-0 bg-black/50 flex items-center justify-center"><span className="text-white font-medium text-sm">Out of Stock</span></div>}
+                  {p.stock === 0 && <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ color: 'white', fontWeight: '500', fontSize: '14px' }}>Out of Stock</span></div>}
                 </div>
                 <div className="info">
-                  <span className="category-tag mb-2 w-fit">{p.category}</span>
+                  <span className="category-tag" style={{ marginBottom: '8px', display: 'inline-block', width: 'fit-content' }}>{p.category}</span>
                   <h3>{p.name}</h3>
                   <p>{p.description}</p>
                   <div className="bottom">
@@ -133,11 +134,11 @@ export default function Shop() {
 
         {/* PAGINATION */}
         {!searchResults && total > 0 && (
-          <div className="flex items-center justify-between mt-8 pt-6" style={{ borderTop: '1px solid var(--border)' }}>
-            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Showing {((page-1)*8)+1}-{Math.min(page*8, total)} of {total}</p>
-            <div className="flex gap-2">
-              <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page===1} className="btn btn-outline btn-sm disabled:opacity-40">← Prev</button>
-              <button onClick={() => setPage(p => p+1)} disabled={page*8>=total} className="btn btn-outline btn-sm disabled:opacity-40">Next →</button>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '32px', paddingTop: '24px', borderTop: '1px solid var(--border)' }}>
+            <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Showing {((page-1)*8)+1}-{Math.min(page*8, total)} of {total}</p>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page===1} className="btn btn-outline btn-sm" style={{ opacity: page===1 ? 0.4 : 1 }}>← Prev</button>
+              <button onClick={() => setPage(p => p+1)} disabled={page*8>=total} className="btn btn-outline btn-sm" style={{ opacity: page*8>=total ? 0.4 : 1 }}>Next →</button>
             </div>
           </div>
         )}
