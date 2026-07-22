@@ -87,7 +87,7 @@ export default function Login() {
       }
 
       google.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID',
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || '314051158215-bv1mkgs74a1squb1ov4a5ck49obo7umt.apps.googleusercontent.com',
         callback: async (response: any) => {
           try {
             setLoading(true);
