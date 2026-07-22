@@ -116,28 +116,30 @@ const extractKeywords = (productName: string): string[] => {
 export const resolveProductImage = (productName: string, category: string, id: number): string => {
   const keywords = extractKeywords(productName);
 
+  // Category colors for visual distinction
+  const categoryColors: Record<string, string> = {
+    'Electronics': '3b82f6',
+    'Clothing': '8b5cf6',
+    'Home & Kitchen': '10b981',
+    'Sports & Outdoors': 'f59e0b',
+    'Books': '6366f1',
+    'Toys & Games': 'ec4899',
+  };
+
+  const color = categoryColors[category] || '6b7280';
+
   // Try exact keyword match
   for (const keyword of keywords) {
     for (const mapping of IMAGE_MAPPINGS) {
       if (mapping.category === category && mapping.keywords.some(k => keyword.includes(k) || k.includes(keyword))) {
-        const seed = productName.split('').reduce((a: number, c: string) => a + c.charCodeAt(0), 0) + id;
-        return `https://placehold.co/400x300/1e293b/ffffff?text=${encodeURIComponent(mapping.query)}`;
+        return `https://placehold.co/400x300/${color}/ffffff?text=${encodeURIComponent(mapping.query)}`;
       }
     }
   }
 
-  // Fallback to category default
-  const categoryDefaults: Record<string, string> = {
-    'Electronics': 'electronics',
-    'Clothing': 'fashion',
-    'Home & Kitchen': 'home',
-    'Sports & Outdoors': 'sports',
-    'Books': 'books',
-    'Toys & Games': 'toys',
-  };
-
-  const defaultQuery = categoryDefaults[category] || 'product';
-  return `https://placehold.co/400x300/1e293b/ffffff?text=${encodeURIComponent(defaultQuery)}`;
+  // Fallback - show product type from name
+  const productType = productName.split(' ').slice(-2).join(' ');
+  return `https://placehold.co/400x300/${color}/ffffff?text=${encodeURIComponent(productType)}`;
 };
 
 export default resolveProductImage;

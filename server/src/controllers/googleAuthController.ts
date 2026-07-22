@@ -13,17 +13,45 @@ export const googleCallback = async (req: Request, res: Response): Promise<void>
       return;
     }
 
-    // In production, exchange code for tokens with Google
-    // For demo, we'll create a user with the code as identifier
-    const email = `google_user_${Date.now()}@gmail.com`;
-    const name = 'Google User';
+    // Exchange code for tokens with Google
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code: code as string,
+        client_id: config.googleClientId || '',
+        client_secret: config.googleClientSecret || '',
+        redirect_uri: 'http://localhost:5000/api/auth/google/callback',
+        grant_type: 'authorization_code',
+      }),
+    });
 
-    let user = await User.findOne({ email });
+    const tokenData = await tokenResponse.json() as any;
+
+    if (!tokenData.access_token) {
+      res.redirect('http://localhost:5173/login?error=token_failed');
+      return;
+    }
+
+    // Get user info from Google
+    const userResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: { Authorization: `Bearer ${tokenData.access_token}` },
+    });
+
+    const googleUser = await userResponse.json() as any;
+
+    if (!googleUser.email) {
+      res.redirect('http://localhost:5173/login?error=no_email');
+      return;
+    }
+
+    // Find or create user
+    let user = await User.findOne({ email: googleUser.email });
 
     if (!user) {
       user = await User.create({
-        name,
-        email,
+        name: googleUser.name || googleUser.email.split('@')[0],
+        email: googleUser.email,
         password: Math.random().toString(36).slice(-12),
         role: 'customer',
       });

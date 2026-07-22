@@ -9,5 +9,7 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET || 'default_jwt_secret',
   redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
   openaiApiKey: process.env.OPENAI_API_KEY || '',
-  clientUrl: process.env.CLIENT_URL || 'http://localhost:3000',
+  clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
+  googleClientId: process.env.GOOGLE_CLIENT_ID || '',
+  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
 };
