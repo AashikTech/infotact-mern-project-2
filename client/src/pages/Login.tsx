@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../lib/api';
 
 // Floating Input Component
 interface FloatingInputProps {
@@ -74,6 +75,39 @@ export default function Login() {
     else if (password.length < 6) newErrors.password = 'Password must be at least 6 characters';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      // @ts-ignore
+      const google = window.google;
+      if (!google) {
+        alert('Google SDK not loaded. Please refresh the page.');
+        return;
+      }
+
+      google.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID',
+        callback: async (response: any) => {
+          try {
+            setLoading(true);
+            const res = await api.post('/auth/google', { credential: response.credential });
+            localStorage.setItem('token', res.data.data.token);
+            localStorage.setItem('user', JSON.stringify(res.data.data.user));
+            const user = res.data.data.user;
+            navigate(user.role === 'admin' ? '/admin' : '/shop');
+          } catch (err: any) {
+            setErrors({ general: err.response?.data?.message || 'Google login failed' });
+          } finally {
+            setLoading(false);
+          }
+        },
+      });
+
+      google.accounts.id.prompt();
+    } catch (err) {
+      setErrors({ general: 'Google login initialization failed' });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -229,7 +263,7 @@ export default function Login() {
           {/* Google Login Button */}
           <button
             type="button"
-            onClick={() => alert('Google login coming soon!')}
+            onClick={handleGoogleLogin}
             className="w-full flex items-center justify-center gap-3 py-3 px-4 border-2 border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 group"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">

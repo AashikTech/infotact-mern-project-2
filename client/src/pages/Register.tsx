@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../lib/api';
 
 // Floating Input Component
 interface FloatingInputProps {
@@ -95,10 +96,36 @@ export default function Register() {
     }
   };
 
-  const handleGoogleLogin = () => {
-    // Google OAuth would go here
-    // For now, show a demo message
-    alert('Google login coming soon!');
+  const handleGoogleLogin = async () => {
+    try {
+      // @ts-ignore
+      const google = window.google;
+      if (!google) {
+        alert('Google SDK not loaded. Please refresh the page.');
+        return;
+      }
+
+      google.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID',
+        callback: async (response: any) => {
+          try {
+            setLoading(true);
+            const res = await api.post('/auth/google', { credential: response.credential });
+            localStorage.setItem('token', res.data.data.token);
+            localStorage.setItem('user', JSON.stringify(res.data.data.user));
+            navigate('/shop');
+          } catch (err: any) {
+            setErrors({ general: err.response?.data?.message || 'Google login failed' });
+          } finally {
+            setLoading(false);
+          }
+        },
+      });
+
+      google.accounts.id.prompt();
+    } catch (err) {
+      setErrors({ general: 'Google login initialization failed' });
+    }
   };
 
   return (
