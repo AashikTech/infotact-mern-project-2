@@ -8,6 +8,7 @@ import Products from './pages/Products';
 import Search from './pages/Search';
 import AdminUsers from './pages/AdminUsers';
 import Shop from './pages/Shop';
+import Cart from './pages/Cart';
 
 const RoleRedirect = () => {
   const { user, loading } = useAuth();
@@ -25,7 +26,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* Admin Routes - Only admin can access */}
+          {/* Admin Routes */}
           <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><Dashboard /></ProtectedRoute>}>
             <Route index element={<Products />} />
             <Route path="products" element={<Products />} />
@@ -33,10 +34,11 @@ function App() {
             <Route path="users" element={<AdminUsers />} />
           </Route>
 
-          {/* Customer Routes - Only customers can access */}
+          {/* Customer Routes */}
           <Route path="/shop" element={<ProtectedRoute requiredRole="customer"><Shop /></ProtectedRoute>} />
+          <Route path="/cart" element={<ProtectedRoute requiredRole="customer"><Cart /></ProtectedRoute>} />
 
-          {/* Default redirect based on role */}
+          {/* Default redirect */}
           <Route path="/" element={<RoleRedirect />} />
         </Routes>
       </BrowserRouter>

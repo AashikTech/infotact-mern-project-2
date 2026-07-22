@@ -57,12 +57,10 @@ export default function Shop() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
             <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Hi, <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{user?.name}</span></span>
-            <div style={{ position: 'relative' }}>
-              <button style={{ padding: '8px', borderRadius: '12px', background: 'transparent', border: 'none', cursor: 'pointer' }}>
-                <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-              </button>
+            <a href="/cart" style={{ position: 'relative', padding: '8px', borderRadius: '12px', background: 'transparent', border: 'none', cursor: 'pointer', textDecoration: 'none' }}>
+              <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
               {cartCount > 0 && <span style={{ position: 'absolute', top: '-4px', right: '-4px', width: '20px', height: '20px', borderRadius: '50%', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' }}>{cartCount}</span>}
-            </div>
+            </a>
             <button onClick={() => { if (confirm('Logout?')) logout(); }} className="btn btn-secondary btn-sm">Logout</button>
           </div>
         </div>
