@@ -53,28 +53,28 @@ export default function Dashboard() {
 
         {/* STATS */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
-          <div className="stat-card">
-            <p className="label">Total Products</p>
-            <p className="value">{stats.products}</p>
+          <div style={{ background: 'var(--surface)', borderRadius: '16px', padding: '20px', border: 'none', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Total Products</p>
+            <p style={{ fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)' }}>{stats.products}</p>
           </div>
-          <div className="stat-card">
-            <p className="label">Total Orders</p>
-            <p className="value">{stats.orders}</p>
+          <div style={{ background: 'var(--surface)', borderRadius: '16px', padding: '20px', border: 'none', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Total Orders</p>
+            <p style={{ fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)' }}>{stats.orders}</p>
           </div>
-          <div className="stat-card" style={{ borderTop: '3px solid #10b981' }}>
-            <p className="label" style={{ color: '#10b981' }}>Customers</p>
-            <p className="value">{customers.length}</p>
+          <div style={{ background: 'var(--surface)', borderRadius: '16px', padding: '20px', border: 'none', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', fontWeight: '500', color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Customers</p>
+            <p style={{ fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)' }}>{customers.length}</p>
           </div>
-          <div className="stat-card" style={{ borderTop: '3px solid #8b5cf6' }}>
-            <p className="label" style={{ color: '#8b5cf6' }}>Admins</p>
-            <p className="value">{admins.length}</p>
+          <div style={{ background: 'var(--surface)', borderRadius: '16px', padding: '20px', border: 'none', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <p style={{ fontSize: '12px', fontWeight: '500', color: '#8b5cf6', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Admins</p>
+            <p style={{ fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)' }}>{admins.length}</p>
           </div>
         </div>
 
         {/* USER BLOCKS */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '32px' }}>
           {/* Customers Block */}
-          <div className="card" style={{ padding: '24px' }}>
+          <div style={{ background: 'var(--surface)', borderRadius: '16px', padding: '24px', border: 'none', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -107,7 +107,7 @@ export default function Dashboard() {
           </div>
 
           {/* Admins Block */}
-          <div className="card" style={{ padding: '24px' }}>
+          <div style={{ background: 'var(--surface)', borderRadius: '16px', padding: '24px', border: 'none', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#f3e8ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
